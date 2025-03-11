@@ -11,4 +11,4 @@ RUN git clone https://github.com/novnc/noVNC.git /opt/novnc && \
 
 EXPOSE 6900
 
-CMD ["/opt/websockify/run", "--web", "/opt/novnc", "6900", "selenium:5900"]
+CMD ["/opt/websockify/run", "--web", "/opt/novnc", "6900", "selenium_for_webglace:5900"]

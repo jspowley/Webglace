@@ -3,7 +3,7 @@ version: '3.8'
 services:
   selenium:
     image: selenium/standalone-chrome-debug:3.141.59-20210607
-    container_name: selenium
+    container_name: selenium_for_webglace
     ports:
       - "4444:4444"
       - "5900:5900"
@@ -13,7 +13,7 @@ services:
 
   novnc:
     image: jspowley/novnc:latest
-    container_name: novnc_with_net
+    container_name: novnc_for_webglace
     ports:
       - "6900:6900"
     depends_on:
