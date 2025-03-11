@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  selenium:
+    image: selenium/standalone-chrome-debug:3.141.59-20210607
+    container_name: selenium
+    ports:
+      - "4444:4444"
+      - "5900:5900"
+    shm_size: "2g"
+    networks:
+      - selenium-net
+
+  novnc:
+    image: jspowley/novnc:latest
+    container_name: novnc_with_net
+    ports:
+      - "6900:6900"
+    depends_on:
+      - selenium
+    networks:
+      - selenium-net
+
+networks:
+  selenium-net:
+    driver: bridge
