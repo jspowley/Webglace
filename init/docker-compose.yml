@@ -20,6 +20,14 @@ services:
       - selenium
     networks:
       - selenium-net
+      
+  webglace_shiny:
+    image: jspowley/webglace_shiny:latest
+    container_name: shiny_for_webglace
+    ports:
+      - "3838:3838"
+    networks:
+      - selenium-net
 
 networks:
   selenium-net:
