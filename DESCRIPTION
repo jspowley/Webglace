@@ -6,8 +6,10 @@ Authors@R:
 Description: This app, in development, is intended to increase the flexibility for static, and potentially dynamic wewbscraping, by allowing the user to create precalibrated web scraping flows they can use in the broader context of a data science solution. The goal is to allow interactive and custom class building that let's the user observe how objects on the page are identified and interacted with.
 License: file LICENSE
 Imports: 
+    bslib,
     config,
     golem,
+    RSelenium,
     shiny
 Encoding: UTF-8
 LazyData: true

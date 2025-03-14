@@ -9,8 +9,15 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    fluidPage(
-      golem::golem_welcome_page() # Remove this line to start building your UI
+    bslib::page_navbar(title = "Webglace",
+      
+      mod_welcome_ui("welcome_1"),
+      mod_browser_ui("browser_1"),
+      
+      bslib::nav_panel(title = "mod2",
+        bslib::layout_sidebar(viewport_standalone())
+      )
+      
     )
   )
 }

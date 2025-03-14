@@ -5,5 +5,9 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
-  # Your application server logic
+  
+  r <- shiny::reactiveValues()
+  mod_initialize_server("initialize", r)
+  mod_browser_server("browser_1", r)
+  
 }
