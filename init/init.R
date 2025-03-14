@@ -11,3 +11,5 @@
 # docker run -d --name novnc_with_net --network selenium-net -p 6900:6900  novnc
 
 # Working containers are selenium and novcn_with_net
+
+# new git trigger test
