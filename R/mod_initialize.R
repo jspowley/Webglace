@@ -23,7 +23,7 @@ mod_initialize_server <- function(id, r){
     ns <- session$ns
     
     r$remDr <- RSelenium::remoteDriver(
-      remoteServerAddr = "localhost",
+      remoteServerAddr = "selenium",
       port = 4444L,
       browserName = "chrome"
     )
