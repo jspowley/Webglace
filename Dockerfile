@@ -13,7 +13,7 @@ RUN R -e "install.packages(c('devtools'), dependencies = TRUE, repos = 'https://
 # RUN R -e "devtools::install_github('https://github.com/jspowley/eiatools')"
 
 RUN git clone https://github.com/jspowley/bond_app.git /srv/shiny-server/webglace_pack
-RUN R -e "setwd('/srv/shiny-server/webglace_pack') devtools::install(dependencies = TRUE)"
+RUN R -e "setwd('/srv/shiny-server/webglace_pack'); setwd('/srv/shiny-server/webglace_pack')"
 
 
 RUN chown -R shiny:shiny /srv/shiny-server/webglace
