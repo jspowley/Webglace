@@ -1,5 +1,5 @@
 testServer(
-  mod_viewport_server,
+  mod_browser_server,
   # Add here your module params
   args = list()
   , {
@@ -27,7 +27,7 @@ testServer(
 })
  
 test_that("module ui works", {
-  ui <- mod_viewport_ui(id = "test")
+  ui <- mod_browser_ui(id = "test")
   golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
   fmls <- formals(mod_viewport_ui)

@@ -14,19 +14,29 @@ mod_initialize_ui <- function(id) {
   )
 }
     
-#' initialize Server Parameters
-#'
-#' @noRd 
+#' initialize Server Parameters Contains small r inirstializations
+#' @noRd
 mod_initialize_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     
     ns <- session$ns
     
     r$remDr <- RSelenium::remoteDriver(
-      remoteServerAddr = "selenium",
+      # remoteServerAddr = "selenium", # required for docker compose implementation
+      remoteServerAddr = "localhost",
       port = 4444L,
       browserName = "chrome"
     )
+    
+    init <- NA
+    
+    observeEvent(init, {
+      try(r$remDr$close())
+      r$remDr$open()
+      r$remDr$navigate("https://google.ca")
+    })
+    
+    init <- 1
     
   })
 }
