@@ -22,7 +22,10 @@ attachment::att_amend_desc()
 ## Create a module infrastructure in R/
 golem::add_module(name = "initialize", with_test = TRUE)
 golem::add_module(name = "welcome", with_test = TRUE)
-golem::add_module(name = "viewport", with_test = TRUE) # Name of the module
+golem::add_module(name = "browser", with_test = TRUE)
+golem::add_module(name = "classification_1", with_test = TRUE)
+
+# Name of the module
 # golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
 
 usethis::use_package("bslib")

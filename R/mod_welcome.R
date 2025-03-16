@@ -11,9 +11,11 @@ mod_welcome_ui <- function(id) {
   
   ns <- NS(id)
   
+  #tagList(
+  
   bslib::nav_panel(
     title = "Welcome",
-                   
+      
     bslib::page_fluid(
       h1("Welcome!"),
       h2("About"),
@@ -22,7 +24,9 @@ mod_welcome_ui <- function(id) {
       p("The app uses noVNC viewer and a standalone instance of selenium to allow session linked web browsing within the app. This simplifies orchestration and maintainability greatly but does come with some quirks. So for your quality of experience, here's a few tips:"),
       p("Scrolling in the viewport session when hovering over the desktop switches between sessions; If you ever find your browser window disappears unexpectedly, simply hover over the viewport desktop and scroll until you're back to workspace one. You can see which workspace you are in on the taskbar, at the bottom left. The easiest way to ensure a smooth us experience is to fullscreen the browser session, and to use only one tab at a time within the main browser.")
     )
-  )
+    
+    )
+  #)
 }
     
 #' welcome Server Functions

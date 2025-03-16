@@ -1,5 +1,5 @@
 testServer(
-  mod_browser_server,
+  mod_classification_1_server,
   # Add here your module params
   args = list()
   , {
@@ -27,10 +27,10 @@ testServer(
 })
  
 test_that("module ui works", {
-  ui <- mod_browser_ui(id = "test")
+  ui <- mod_classification_1_ui(id = "test")
   golem::expect_shinytag(ui)
   # Check that formals have not been removed
-  fmls <- formals(mod_browser_ui)
+  fmls <- formals(mod_classification_1_ui)
   for (i in c("id")){
     expect_true(i %in% names(fmls))
   }

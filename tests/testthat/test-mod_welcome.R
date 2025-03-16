@@ -28,7 +28,7 @@ testServer(
  
 test_that("module ui works", {
   ui <- mod_welcome_ui(id = "test")
-  golem::expect_shinytaglist(ui)
+  golem::expect_shinytag(ui)
   # Check that formals have not been removed
   fmls <- formals(mod_welcome_ui)
   for (i in c("id")){

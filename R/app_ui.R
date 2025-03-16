@@ -14,7 +14,8 @@ app_ui <- function(request) {
       title = shiny::img(src = "www/logo.png", height = "80px"),
       
       mod_welcome_ui("welcome_1"),
-      mod_browser_ui("browser_1")
+      mod_browser_ui("browser_1"),
+      mod_classification_1_ui("class_1")
       
     )
   )

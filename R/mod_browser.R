@@ -10,7 +10,7 @@
 mod_browser_ui <- function(id) {
   
   ns <- NS(id)
-  
+    
   bslib::nav_panel(title = "Browser",
                    
     bslib::page_sidebar(
