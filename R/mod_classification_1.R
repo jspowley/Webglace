@@ -10,11 +10,12 @@
 mod_classification_1_ui <- function(id) {
   ns <- NS(id)
     bslib::nav_panel(
-      title = "Classifiers 1",
+      title = "CSS Classification",
       bslib::page_sidebar(
         sidebar = bslib::sidebar(
-          shiny::actionButton(ns("add"), "Add Identifiers"),
-          shiny::actionButton(ns("remove"), "Remove Identifiers"),
+          shiny::textInput(ns("css_select"), "CSS Selector"),
+          shiny::actionButton(ns("add"), "Identify"),
+          shiny::actionButton(ns("remove"), "Clear"),
         ),
         viewport_standalone()
       )
@@ -30,22 +31,42 @@ mod_classification_1_server <- function(id, r){
     
     observeEvent(input$add,{
       
-      r$remDr$navigate("https://example.com")
+      css_selector <- input$css_select
+
+      if(length(css_selector) > 0){
       
-      js_test <- "return 2 + 2;"
-      result <- r$remDr$executeScript(js_test, list())
+      if(!is.null(r$last_css)){
+        # Removing previous selections if/when they exist
+        js <- paste0("document.querySelectorAll('",r$last_css,"')")
+        js <- 
+          paste0(js,
+                 ".forEach(el => el.style.border = '');"
+          )
+        r$remDr$executeScript(js, args = list(NULL))
+      }
       
-      print(result)
+      js <- paste0("document.querySelectorAll('",css_selector,"')")
+      js <- 
+        paste0(js,
+          ".forEach(el => el.style.border = '2px solid red');"
+        )
+      r$remDr$executeScript(js, args = list(NULL))
       
-      #css_selector <- "div"
-      #js <- paste0("document.querySelectorAll('",css_selector,"')")
-      #js <- 
-      #  paste0(js,
-      #    ".forEach(el => el.style.border = '2px solid red');"
-      #  )
-      #print(js)
-      #js <- "document.body.style.backgroundColor = 'yellow';"
-      #r$remDr$executeScript(js, args = list())
+      r$last_css <- css_selector
+      
+      }
+    })
+    
+    observeEvent(input$remove,{
+      if(!is.null(r$last_css)){
+        js <- paste0("document.querySelectorAll('",r$last_css,"')")
+        js <- 
+          paste0(js,
+                 ".forEach(el => el.style.border = '');"
+          )
+        r$remDr$executeScript(js, args = list(NULL))
+        r$last_css <- NULL
+      }
     })
   })
 }

@@ -25,7 +25,7 @@ mod_browser_ui <- function(id) {
         # Browse by URL
         bslib::card(
           bslib::card_header("Site URL"),
-          shiny::textInput(ns("url"), "", value = "https://google.ca"),
+          shiny::textInput(ns("url"), "", value = "https://duckduckgo.com"),
           shiny::actionButton(ns("go"), "Go!")
         ),
         

@@ -33,7 +33,7 @@ mod_initialize_server <- function(id, r){
     observeEvent(init, {
       try(r$remDr$close())
       r$remDr$open()
-      r$remDr$navigate("https://google.ca")
+      r$remDr$navigate("https://duckduckgo.com")
     })
     
     init <- 1
