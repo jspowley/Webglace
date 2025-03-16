@@ -9,18 +9,18 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
-    bslib::page_navbar(title = "Webglace",
+    bslib::page_navbar(
+      
+      title = shiny::img(src = "www/logo.png", height = "80px"),
       
       mod_welcome_ui("welcome_1"),
-      mod_browser_ui("browser_1"),
-      
-      bslib::nav_panel(title = "mod2",
-        bslib::layout_sidebar(viewport_standalone())
-      )
+      mod_browser_ui("browser_1")
       
     )
   )
 }
+
+
 
 #' Add external Resources to the Application
 #'
@@ -35,9 +35,9 @@ golem_add_external_resources <- function() {
     "www",
     app_sys("app/www")
   )
-
+  
   tags$head(
-    favicon(),
+    golem::favicon(),
     bundle_resources(
       path = app_sys("app/www"),
       app_title = "Webglace"

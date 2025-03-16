@@ -18,7 +18,7 @@ mod_browser_ui <- function(id) {
         
         # Setup
         bslib::card(
-          bslib::card_header("Setup"),
+          bslib::card_header("Setup and Browser"),
           shiny::actionButton(ns("start_browser"), "Start Browser")
         ),
         
