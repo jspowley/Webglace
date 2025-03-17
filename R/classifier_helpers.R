@@ -8,22 +8,19 @@ selector <- R6::R6Class(
     css_self = NULL,
     css_within = NULL,
     css_contains = NULL,
-    text_within = NULL,
-    text_self = NULL,
+    #text_self = NULL,
     
     initialize = function(
       css_self, 
       css_within = NULL, 
       css_contains = NULL,
-      text_within = NULL,
-      text_self = NULL
+      #text_self = NULL
     ){
       
       self$css_self <- css_self
       self$css_within <- css_within
       self$css_contains <- css_contains
-      self$text_within <- text_within
-      self$text_self <- text_self
+      #self$text_self <- text_self
       
     },
     
@@ -35,23 +32,16 @@ selector <- R6::R6Class(
           rvest::html_nodes(self$css_within)
         nodes <- nodes %>% rvest::html_nodes(self$css_self)
         
-        # Filter by higher level container text contents, which naturally includes text of any and all containers organized within
-        if(!is.null(self$text_within)){
-          text_vec <- nodes %>% rvest::html_text()
-          text_vec <- text_vec %>% stringr::str_detect(pattern = self$text_within)
-          nodes <- nodes[text_vec]
-        }
-        
       }else{
         nodes <- html_in %>% rvest::html_nodes(self$css_self)
       }
       
-      # Filtering at the selector level for text contents
-      if(!is.null(self$text_self)){
-        text_vec <- nodes %>% rvest::html_text()
-        text_vec <- text_vec %>% stringr::str_detect(pattern = self$text_self)
-        nodes <- nodes[text_vec]
-      }
+      # Filtering at the selector level for text contents, removed due to JS limitations with REGEX a feature which can be moved downstream quite easily.
+      #if(!is.null(self$text_self)){
+      #  text_vec <- nodes %>% rvest::html_text()
+      #  text_vec <- text_vec %>% stringr::str_detect(pattern = self$text_self)
+      #  nodes <- nodes[text_vec]
+      #}
       
       # Filtering for only css_self tags which contain css_contains tags
       if(!is.null(self$css_contains)){
