@@ -100,6 +100,7 @@ mod_browser_server <- function(id, r){
       r$page_html <- page_out
       
       print(r$page_html)
+      saveRDS(as.character(page_out), "test_page.rds")
       
     })
     
