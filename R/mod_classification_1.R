@@ -16,6 +16,7 @@ mod_classification_1_ui <- function(id) {
           shiny::textInput(ns("css_select"), "CSS Selector"),
           shiny::actionButton(ns("add"), "Identify"),
           shiny::actionButton(ns("remove"), "Clear"),
+          shiny::actionButton(ns("test_js"), "Test JS")
         ),
         viewport_standalone()
       )
@@ -29,6 +30,7 @@ mod_classification_1_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
+    # Adds the red boxin for the CSS selected.
     observeEvent(input$add,{
       
       css_selector <- input$css_select
@@ -57,6 +59,7 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
+    # Removes the red boxin for the css selected.
     observeEvent(input$remove,{
       if(!is.null(r$last_css)){
         js <- paste0("document.querySelectorAll('",r$last_css,"')")
@@ -67,6 +70,10 @@ mod_classification_1_server <- function(id, r){
         r$remDr$executeScript(js, args = list(NULL))
         r$last_css <- NULL
       }
+    })
+    
+    observeEvent(input$test_js,{
+      r$remDr$executeScript("let elements = document.querySelectorAll('li.card_card___ZlNq'); elements.forEach(el => { let contains = el.querySelector('img') !== null; let within = el.closest('ul.cta-cards_cards__ApWvd') !== null;if(contains && within){el.style.border = '2px solid red'}});", args = list(NULL))
     })
   })
 }

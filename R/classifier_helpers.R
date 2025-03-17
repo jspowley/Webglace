@@ -4,7 +4,6 @@ selector <- R6::R6Class(
   private = list(),
   public = list(
     
-    js = NULL,
     css_self = NULL,
     css_within = NULL,
     css_contains = NULL,
@@ -13,7 +12,7 @@ selector <- R6::R6Class(
     initialize = function(
       css_self, 
       css_within = NULL, 
-      css_contains = NULL,
+      css_contains = NULL
       #text_self = NULL
     ){
       
@@ -60,16 +59,44 @@ selector <- R6::R6Class(
       return(nodes)
     },
     
-    make_js = function(){
+    js = function(border = TRUE){
       
-    },
-    
-    border = function(){
+      # Methods for flagging whether various css selectors match to adjacent/nested elements
+      js_self <- paste0("let elements = document.querySelectorAll('",self$css_self,"');")
+      js_contains <- paste0("let contains = el.querySelector('", self$css_contains, "') !== null;")
+      js_within <- paste0("let within = el.closest('", self$css_within,"') !== null;")
       
-    },
-    
-    no_border = function(){
+      logical <- c()
+      js_query <- paste(js_self, "elements.forEach(el => {")
       
+      # We need to append both logical identification and control structure to respond to css selectors, but only when provided
+      if(!is.null(self$css_contains)){
+        logical <- append(logical, "contains")
+        js_query <- paste(js_query, js_contains)
+      }
+      
+      if(!is.null(self$css_within)){
+        logical <- append(logical, "within")
+        js_query <- paste(js_query, js_within)
+      }
+      
+      logical <- paste(logical, collapse = " && ")
+      
+      # Are we highlighting the border or removing?
+      if(border){
+        border <- "'2px solid red'"
+      }else{
+        border <- "''"
+      }
+      
+      # Standard or conditional query?
+      if(length(logical) > 0){
+        js_query <- paste0(js_query, "if(", logical, "){el.style.border = ", border,"}});")
+      }else{
+        js_query <- paste0(js_query, " el.style.border = ", border, "})")
+      }
+      
+      return(js_query)
     }
   ))
 
@@ -87,10 +114,12 @@ readRDS("test_page.rds") %>%
   rvest::read_html() %>% 
   unique_tags()
 
-s <- selector$new("div", "div.flex", css_contains = "img", text_self = "a")
+s <- selector$new("li.card_card___ZlNq", "ul.cta-cards_cards__ApWvd", "img")
 nodes <- s$scrape(readRDS("test_page.rds") %>% rvest::read_html())
 
 nodes
+
+s$js()
 
 for(n in nodes){
   n %>% rvest::html_node("a") %>% length() %>% print()
