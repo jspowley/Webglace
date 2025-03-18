@@ -121,9 +121,12 @@ nodes
 
 s$js()
 
-unique_classes <- function(html_in, tag_in){
+unique_classes <- function(html_in, tag_in = NULL){
+  
+  css_selector <- ifelse(is.null(tag_in), "*", tag_in)
+  
   html_in %>%
-    rvest::html_nodes(tag_in) %>% 
+    rvest::html_nodes(css_selector) %>% 
     rvest::html_attrs() %>% 
     unlist() %>% 
     .[names(.) == "class"] %>% 
@@ -136,7 +139,17 @@ unique_classes <- function(html_in, tag_in){
 
 attr_names <- function(html_in, tag_in, class_in = NULL){
   
+  print(tag_in)
+  
+  if(tag_in == "(No Tag)"){
+    tag_in <- "*"
+  }
+  
   css_id <- ifelse(is.null(class_in), tag_in, paste0(tag_in,".",class_in))
+  
+  if(is.null(css_id)){
+    css_id <- "*"
+  }
 
   html_in %>%
     rvest::html_nodes(css_id) %>% 
@@ -150,9 +163,21 @@ attr_names <- function(html_in, tag_in, class_in = NULL){
   
 }
 
-attr_values <- function(html_in, tag_in, attr_in, class_in = NULL){
+readRDS("test_page.rds") %>% 
+  rvest::read_html() %>% 
+  rvest::html_nodes("*")
+
+attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
+  
+  if(tag_in == "(No Tag)"){
+    tag_in <- "*"
+  }
   
   css_id <- ifelse(is.null(class_in), tag_in, paste0(tag_in,".",class_in))
+  
+  if(is.null(css_id)){
+    css_id <- "*"
+  }
   
   html_in %>%
     rvest::html_nodes(css_id) %>% 
@@ -161,12 +186,13 @@ attr_values <- function(html_in, tag_in, attr_in, class_in = NULL){
     .[names(.) == attr_in] %>% 
     unique() %>% 
     sort() %>% 
+    as.character() %>% 
     return()
 }
 
 readRDS("test_page.rds") %>% 
   rvest::read_html() %>% 
-  attr_values("div", "id")
+  rvest::html_nodes("*.text")
 
 for(n in nodes){
   n %>% rvest::html_node("a") %>% length() %>% print()

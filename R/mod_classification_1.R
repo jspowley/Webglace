@@ -13,17 +13,33 @@ mod_classification_1_ui <- function(id) {
       title = "CSS Classification",
       bslib::page_sidebar(
         sidebar = bslib::sidebar(
+          
           shiny::actionButton(ns("page_update"), "Pull HTML"),
+          
           shiny::div(
-            shiny::uiOutput(ns("tag_select")),
-            shiny::uiOutput(ns("class_select")),
+            
+            shiny::div(style = select_div_style,
+              shiny::uiOutput(ns("tag_select")),
+              shiny::actionButton(ns("tag_add"), "Add", style = select_add_style),
+              shiny::actionButton(ns("tag_remove"), "Remove", style = select_add_style)
+            ),
+            
+            shiny::div(style = select_div_style,
+              shiny::uiOutput(ns("class_select")),
+              shiny::actionButton(ns("class_add"), "Add", style = select_add_style),
+              shiny::actionButton(ns("class_remove"), "Remove", style = select_add_style)
+            ),
+            
             shiny::div(
               shiny::uiOutput(ns("attr_name_select")),
               shiny::uiOutput(ns("attr_value_select")),
+              shiny::actionButton(ns("attr_add"),"Add", style = select_add_style),
+              shiny::actionButton(ns("attr_remove"),"Remove", style = select_add_style),
               style = select_div_style
             ),
             style = "margin-bottom: 0px; margin-top: 0;"
           ),
+          shiny::textOutput(ns("css_test")),
           shiny::textInput(ns("css_select"), "CSS Selector"),
           shiny::actionButton(ns("add"), "Identify"),
           shiny::actionButton(ns("remove"), "Clear"),
@@ -42,6 +58,13 @@ mod_classification_1_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
     
+    # Initialize form:
+    
+    output$tag_select <- renderUI(p("To begin, Load HTML"))
+    output$class_select <- renderUI(p("To begin, Load HTML"))
+    output$attr_name_select <- renderUI(p("To begin, Load HTML"))
+    output$attr_value_select <- renderUI(p())
+    
     # Update html pull for forms
     shiny::observeEvent(input$page_update,{
       page_out <- r$remDr$getPageSource()
@@ -51,33 +74,28 @@ mod_classification_1_server <- function(id, r){
     
     # update tag form
     shiny::observeEvent(r$page_html, {
-      print("updated tag form")
       tag_vec <- unique_tags(r$page_html)
       
       output$tag_select <- shiny::renderUI(
-        shiny::div(
-          style = select_div_style,
-          shiny::selectInput(ns("tag_select"), "Tag", choices = tag_vec),
-          shiny::actionButton(ns("tag_add"), "Add", style = select_add_style)
-        )
-        )
+        shiny::selectInput(ns("tag_select"), "Tag", choices = append("(No Tag)", tag_vec), selected = "(No Tag)")
+      )
     })
     
     # update class form
     shiny::observeEvent(input$tag_select,{
       shiny::req(input$tag_select)
       if(length(input$tag_select) > 0){
-        class_vec <- unique_classes(r$page_html, input$tag_select)
+        if(input$tag_select == "(No Tag)"){
+          class_vec <- unique_classes(r$page_html, tag_in = NULL)
+        }else{
+          class_vec <- unique_classes(r$page_html, tag_in = input$tag_select)
+        }
       }else{
-        class_vec <- c("(No Class)")
+        class_vec <- c("(Error, Tag too short!)")
       }
       
       output$class_select <- shiny::renderUI(
-        shiny::div(
-          style = select_div_style,
-          shiny::selectizeInput(ns("class_select"), "Class", choices = append("(No Class)", class_vec), selected = "(No Class)"),
-          shiny::actionButton(ns("class_add"), "Add", style = select_add_style)
-        )
+        shiny::selectizeInput(ns("class_select"), "Class", choices = append("(No Class)", class_vec), selected = "(No Class)")
       )
     })
     
@@ -90,7 +108,6 @@ mod_classification_1_server <- function(id, r){
       }else{
         attr <- r$page_html %>% attr_names(input$tag_select, input$class_select)
       }
-      print(attr)
       output$attr_name_select <- shiny::renderUI({
         shiny::selectizeInput(ns("attr_name_select"), "Attribute Name", choices = append("(No Attribute)", attr), selected = "(No Attribute)")
       })
@@ -101,14 +118,19 @@ mod_classification_1_server <- function(id, r){
       shiny::req(input$tag_select)
       shiny::req(input$class_select)
       if(input$class_select == "(No Class)"){
-        attr <- r$page_html %>% attr_values(input$tag_select, input$attr_name_select)
+        attr <- r$page_html %>% attr_values(tag_in = input$tag_select, attr_in = input$attr_name_select)
       }else{
-        attr <- r$page_html %>% attr_values(input$tag_select, class_in = input$class_select, input$attr_name_select)
+        attr <- r$page_html %>% attr_values(tag_in = input$tag_select, class_in = input$class_select, attr_in = input$attr_name_select)
       }
-      print(attr)
       output$attr_value_select <- shiny::renderUI({
-        shiny::selectizeInput(ns("attr_name_select"), "Attribute Name", choices = append("(No Attribute)", attr), selected = "(No Attribute)")
+        shiny::selectizeInput(ns("attr_value_select"), "Attribute Value", choices = append("(No Value)", attr), selected = "(No Value)")
       })
+    })
+    
+    # Quick test ensuring tag_add works
+    observeEvent(input$tag_add, {
+      text_in <- input$tag_select
+      output$css_test <- renderText(text_in)
     })
     
     # Adds the red boxin for the CSS selected.
