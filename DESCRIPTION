@@ -13,10 +13,12 @@ Imports:
     htmltools,
     magrittr,
     OpenImageR,
+    purrr,
     R6,
     RSelenium,
     rvest,
     shiny,
+    shinypanel,
     stringr,
     xml2
 Encoding: UTF-8

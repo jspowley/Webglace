@@ -121,6 +121,53 @@ nodes
 
 s$js()
 
+unique_classes <- function(html_in, tag_in){
+  html_in %>%
+    rvest::html_nodes(tag_in) %>% 
+    rvest::html_attrs() %>% 
+    unlist() %>% 
+    .[names(.) == "class"] %>% 
+    strsplit(" ") %>% 
+    unlist() %>% 
+    unique() %>% 
+    sort() %>% 
+    return()
+}
+
+attr_names <- function(html_in, tag_in, class_in = NULL){
+  
+  css_id <- ifelse(is.null(class_in), tag_in, paste0(tag_in,".",class_in))
+
+  html_in %>%
+    rvest::html_nodes(css_id) %>% 
+    rvest::html_attrs() %>% 
+    unlist() %>% 
+    names() %>% 
+    .[. != "class"] %>% 
+    unique() %>% 
+    sort() %>% 
+    return()
+  
+}
+
+attr_values <- function(html_in, tag_in, attr_in, class_in = NULL){
+  
+  css_id <- ifelse(is.null(class_in), tag_in, paste0(tag_in,".",class_in))
+  
+  html_in %>%
+    rvest::html_nodes(css_id) %>% 
+    rvest::html_attrs() %>% 
+    unlist() %>% 
+    .[names(.) == attr_in] %>% 
+    unique() %>% 
+    sort() %>% 
+    return()
+}
+
+readRDS("test_page.rds") %>% 
+  rvest::read_html() %>% 
+  attr_values("div", "id")
+
 for(n in nodes){
   n %>% rvest::html_node("a") %>% length() %>% print()
 }
