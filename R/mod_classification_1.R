@@ -37,12 +37,22 @@ mod_classification_1_ui <- function(id) {
               shiny::actionButton(ns("attr_remove"),"Remove", style = select_add_style),
               style = select_div_style
             ),
+            
+            shiny::div(
+              shiny::uiOutput(ns("css_select_ui")),
+              shiny::actionButton(ns("remove"), "Clear", style = select_add_style),
+              style = select_div_style
+            ),
+            
+            bslib::layout_columns(
+              shiny::actionButton(ns("to_parent"), "Add to Parent"),
+              shiny::actionButton(ns("to_main"), "Add to Main"),
+              shiny::actionButton(ns("to_child"), "Add to Child"),
+              col_widths = c(4,4,4)
+            ),
+            
             style = "margin-bottom: 0px; margin-top: 0;"
           ),
-          shiny::textOutput(ns("css_test")),
-          shiny::textInput(ns("css_select"), "CSS Selector"),
-          shiny::actionButton(ns("add"), "Identify"),
-          shiny::actionButton(ns("remove"), "Clear"),
           shiny::actionButton(ns("test_js"), "Test JS"),
           width = 600
         ),
@@ -57,13 +67,15 @@ mod_classification_1_ui <- function(id) {
 mod_classification_1_server <- function(id, r){
   moduleServer(id, function(input, output, session){
     ns <- session$ns
-    
+
     # Initialize form:
     
     output$tag_select <- renderUI(p("To begin, Load HTML"))
     output$class_select <- renderUI(p("To begin, Load HTML"))
     output$attr_name_select <- renderUI(p("To begin, Load HTML"))
     output$attr_value_select <- renderUI(p())
+    
+    css <- shiny::reactiveValues()
     
     # Update html pull for forms
     shiny::observeEvent(input$page_update,{
@@ -127,14 +139,79 @@ mod_classification_1_server <- function(id, r){
       })
     })
     
-    # Quick test ensuring tag_add works
+    # append var for tag when constructing css selector
     observeEvent(input$tag_add, {
-      text_in <- input$tag_select
-      output$css_test <- renderText(text_in)
+      if(input$tag_select != "(No Tag)"){
+        css$tag <- input$tag_select
+      }else{
+        css$tag <- NULL
+      }
+    })
+    
+    observeEvent(input$tag_remove, {
+      css$tag <- NULL
+    }) 
+    
+    # append var for class when constructing css selector
+    observeEvent(input$class_add, {
+      if(input$class_select != "(No Class)"){
+        if(is.null(css$class)){
+          css$class <- paste0(".",input$class_select)
+        }else{
+          css$class <- paste0(css$class, ".",input$class_select)
+        }
+      }
+    }) 
+    
+    observeEvent(input$class_remove, {
+      if(input$class_add){
+        css$class <- stringr::str_remove(css$class, pattern = paste0(".",input$class_select))
+      }
+    })
+    
+    # append var for attributes when constructing css selector
+    observeEvent(input$attr_add, {
+      
+      if(input$attr_name_select != "(No Attribute)" & input$attr_value_select == "(No Value)"){
+        attr_in <- paste0("[",input$attr_name_select,"]")
+      }
+      
+      if(input$attr_name_select != "(No Attribute)" & input$attr_value_select != "(No Value)"){
+        attr_in <- paste0("[",input$attr_name_select," = '", input$attr_value_select, "']")
+      }
+      
+      if(is.null(css$attr)){
+        css$attr <- attr_in
+      }else{
+        css$attr <- paste0(css$attr, attr_in)
+      }
+    })
+    
+    observeEvent(input$attr_remove, {
+      
+      if(input$attr_name_select != "(No Attribute)" & input$attr_value_select == "(No Value)"){
+        attr_out <- paste0("\\[",input$attr_name_select,"\\]")
+      }
+      
+      if(input$attr_name_select != "(No Attribute)" & input$attr_value_select != "(No Value)"){
+        attr_out <- paste0("\\[",input$attr_name_select," = '", input$attr_value_select, "'\\]")
+      }
+      
+      css$attr <- stringr::str_remove(css$attr, pattern = attr_out)
+      
+    })
+    
+    # UI for CSS selector, constructing the selector
+    observeEvent(list(css$tag, css$class, css$attr), {
+      sel_in <- paste0(css$tag, css$class, css$attr)
+      print(sel_in)
+      output$css_select_ui <- renderUI({
+        shiny::textInput(ns("css_select"), "CSS Selector", value = sel_in)
+      })
     })
     
     # Adds the red boxin for the CSS selected.
-    observeEvent(input$add,{
+    observeEvent(input$css_select,{
       
       css_selector <- input$css_select
 
@@ -165,15 +242,22 @@ mod_classification_1_server <- function(id, r){
     
     # Removes the red boxin for the css selected.
     observeEvent(input$remove,{
-      if(!is.null(r$last_css)){
-        js <- paste0("document.querySelectorAll('",r$last_css,"')")
-        js <- 
-          paste0(js,
+      
+      try(
+        if(!is.null(r$last_css)){
+          js <- paste0("document.querySelectorAll('",r$last_css,"')")
+          js <- 
+            paste0(js,
                  ".forEach(el => el.style.border = '');"
-          )
-        r$remDr$executeScript(js, args = list(NULL))
-        r$last_css <- NULL
-      }
+            )
+          r$remDr$executeScript(js, args = list(NULL))
+          r$last_css <- NULL
+        }
+      )
+      
+      css$tag <- NULL
+      css$class <- NULL
+      css$attr <- NULL
     })
     
     observeEvent(input$test_js,{
