@@ -14,9 +14,15 @@ mod_classification_1_ui <- function(id) {
       bslib::page_sidebar(
         sidebar = bslib::sidebar(
           
+          bslib::card(
+            
+          bslib::card_header("Selector Construction"),
+            
           shiny::actionButton(ns("page_update"), "Pull HTML"),
           
           shiny::div(
+            
+            style = "margin-bottom: 0px; margin-top: 0;",
             
             shiny::div(style = select_div_style,
               shiny::uiOutput(ns("tag_select")),
@@ -45,17 +51,28 @@ mod_classification_1_ui <- function(id) {
             ),
             
             bslib::layout_columns(
-              shiny::actionButton(ns("to_parent"), "Add to Parent"),
-              shiny::actionButton(ns("to_main"), "Add to Main"),
-              shiny::actionButton(ns("to_child"), "Add to Child"),
+              shiny::actionButton(ns("to_parent"), "Assign Parent"),
+              shiny::actionButton(ns("to_main"), "Assign Main"),
+              shiny::actionButton(ns("to_child"), "Assign Child"),
               col_widths = c(4,4,4)
-            ),
+            ))),
             
-            style = "margin-bottom: 0px; margin-top: 0;"
+          bslib::card(
+            bslib::card_header("Testing and Export"),
+            shiny::uiOutput(ns("css_diagram")),
+            bslib::layout_columns(
+              bslib::layout_columns(
+                shiny::actionButton(ns("test_classifier"), "Test Classifier"),
+                shiny::actionButton(ns("clear_classifier"), "Clear Page"),
+                col_widths = c(6,6)
+              ),
+              shiny::textInput(ns("classifier_name_out"), "Classifier Name:"),
+              shiny::actionButton(ns("save_classifier"), "Export to Flow Control"),
+              col_widths = c(12)
+            )),
+            
+            width = 600,
           ),
-          shiny::actionButton(ns("test_js"), "Test JS"),
-          width = 600
-        ),
         viewport_standalone()
       )
     )
@@ -240,34 +257,112 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
-    # Removes the red boxin for the css selected.
+    # Removes the red boxing for the css selected. Resets the selector buffers.
     observeEvent(input$remove,{
       
-      try(
-        if(!is.null(r$last_css)){
-          js <- paste0("document.querySelectorAll('",r$last_css,"')")
-          js <- 
-            paste0(js,
-                 ".forEach(el => el.style.border = '');"
-            )
-          r$remDr$executeScript(js, args = list(NULL))
-          r$last_css <- NULL
-        }
-      )
+      clear_css_buffer(r, css)
       
-      css$tag <- NULL
-      css$class <- NULL
-      css$attr <- NULL
     })
     
-    observeEvent(input$test_js,{
-      r$remDr$executeScript("let elements = document.querySelectorAll('li.card_card___ZlNq'); elements.forEach(el => { let contains = el.querySelector('img') !== null; let within = el.closest('ul.cta-cards_cards__ApWvd') !== null;if(contains && within){el.style.border = '2px solid red'}});", args = list(NULL))
+    css_class <- shiny::reactiveValues()
+    
+    shiny::observeEvent(input$to_parent,{
+      if(!is.null(input$css_select) & length(input$css_select) > 0){
+        css_class$parent <- input$css_select
+        clear_css_buffer(r, css)
+      }
     })
+    
+    shiny::observeEvent(input$to_main,{
+      if(!is.null(input$css_select) & length(input$css_select) > 0){
+        css_class$main <- input$css_select
+        clear_css_buffer(r, css)
+      }
+    })
+    
+    shiny::observeEvent(input$to_child,{
+      if(!is.null(input$css_select) & length(input$css_select) > 0){
+        css_class$child <- input$css_select
+        clear_css_buffer(r, css)
+      }
+    })
+    
+    shiny::observeEvent(list(css_class$parent, css_class$main, css_class$child) ,{
+      
+      # Updating the diagram
+      css_diag <- ""
+      
+      if(!is.null(css_class$child)){
+        css_diag <- paste0("<div ", css_diag_style,
+          "><strong>Child: </strong><p>",
+          css_class$child,
+          "</p></strong>",css_diag,"</div>")
+      }
+      
+      if(!is.null(css_class$main)){
+        css_diag <- paste0("<div ", css_diag_style,
+                           "><strong>Main: </strong><p>",
+                           css_class$main,
+                           "</p></strong>",css_diag,"</div>")
+      }
+      
+      if(!is.null(css_class$parent)){
+        css_diag <- paste0("<div ", css_diag_style,
+                           "><strong>Parent: </strong><p>",
+                           css_class$parent,
+                           "</p></strong>",css_diag,"</div>")
+      }
+      
+      output$css_diagram <- shiny::renderUI({
+        shiny::HTML(css_diag)
+      })
+      
+      # Initializing the R6 Class
+      r$css_class_identifier <- selector$new(
+        css_self = css_class$main,
+        css_contains = css_class$child,
+        css_within = css_class$parent
+      )
+        
+      print(is.null(r$css_class_identifier))
+      # Initializing saving form for workflow export
+      if(!is.null(r$css_class_identifier)){
+        print("rendering form")
+        output$testing_form <- shiny::renderUI({
+          
+        })
+      }else{
+        output$testing_form <- shiny::renderUI({NULL})
+      }
+    })
+    
+    #observeEvent(input$test_js,{
+    #  r$remDr$executeScript("let elements = document.querySelectorAll('li.card_card___ZlNq'); elements.forEach(el => { let contains = el.querySelector('img') !== null; let within = el.closest('ul.cta-cards_cards__ApWvd') !== null;if(contains && within){el.style.border = '2px solid red'}});", args = list(NULL))
+    #})
   })
+}
+
+clear_css_buffer <- function(r, css){
+  try(
+    if(!is.null(r$last_css)){
+      js <- paste0("document.querySelectorAll('",r$last_css,"')")
+      js <- 
+        paste0(js,
+               ".forEach(el => el.style.border = '');"
+        )
+      r$remDr$executeScript(js, args = list(NULL))
+      r$last_css <- NULL
+    }
+  )
+  
+  css$tag <- NULL
+  css$class <- NULL
+  css$attr <- NULL
 }
 
 select_add_style <- "height: 37px; padding: 3px 10px; line-height: 1; margin-top: 16px;"
 select_div_style <- "display: flex; align-items: center; gap: 5px; padding: 0;"
+css_diag_style <- 'style="border: 2px solid red; padding: 10px; word-wrap: break-word;"'
     
 ## To be copied in the UI
 # mod_classification_1_ui("classification_1_1")
