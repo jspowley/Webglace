@@ -30,6 +30,7 @@ services:
       - "3838:3838"
     networks:
       - selenium-net
+    pull_policy: always
 
 networks:
   selenium-net:
