@@ -62,12 +62,13 @@ mod_classification_1_ui <- function(id) {
             shiny::uiOutput(ns("css_diagram")),
             bslib::layout_columns(
               bslib::layout_columns(
-                shiny::actionButton(ns("test_classifier"), "Test Classifier"),
+                shiny::actionButton(ns("test_classifier"), "Test Selector"),
                 shiny::actionButton(ns("clear_classifier"), "Clear Page"),
                 col_widths = c(6,6)
               ),
-              shiny::textInput(ns("classifier_name_out"), "Classifier Name:"),
+              shiny::textInput(ns("classifier_name_out"), "Selector Name:"),
               shiny::actionButton(ns("save_classifier"), "Export to Flow Control"),
+              shiny::actionButton(ns("clear_selector"), "Delete Selector"),
               col_widths = c(12)
             )),
             
@@ -245,6 +246,12 @@ mod_classification_1_server <- function(id, r){
         try(r$remDr$executeScript(js, args = list(NULL)))
       }
       
+        # Clear out R6 selector content if any
+      if(!is.null(r$rm_js)){
+        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
+        r$rm_js <- NULL
+      }
+        
       js <- paste0("document.querySelectorAll('",css_selector,"')")
       js <- 
         paste0(js,
@@ -260,7 +267,11 @@ mod_classification_1_server <- function(id, r){
     # Removes the red boxing for the css selected. Resets the selector buffers.
     observeEvent(input$remove,{
       
-      clear_css_buffer(r, css)
+      clear_css_border(r, css)
+      
+      css$tag <- NULL
+      css$class <- NULL
+      css$attr <- NULL
       
     })
     
@@ -269,21 +280,30 @@ mod_classification_1_server <- function(id, r){
     shiny::observeEvent(input$to_parent,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$parent <- input$css_select
-        clear_css_buffer(r, css)
+        clear_css_border(r, css)
+        clear_css_buffer(css)
+      }else{
+        css_class$parent <- NULL
       }
     })
     
     shiny::observeEvent(input$to_main,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$main <- input$css_select
-        clear_css_buffer(r, css)
+        clear_css_border(r, css)
+        clear_css_buffer(css)
+      }else{
+        css_class$main <- NULL
       }
     })
     
     shiny::observeEvent(input$to_child,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$child <- input$css_select
-        clear_css_buffer(r, css)
+        clear_css_border(r, css)
+        clear_css_buffer(css)
+      }else{
+        css_class$child <- NULL
       }
     })
     
@@ -318,6 +338,7 @@ mod_classification_1_server <- function(id, r){
       })
       
       # Initializing the R6 Class
+      print("INITIALIZING R6")
       r$css_class_identifier <- selector$new(
         css_self = css_class$main,
         css_contains = css_class$child,
@@ -336,13 +357,79 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
+    # For testing the classification script (R6 Class for downstream use)
+    shiny::observeEvent(input$test_classifier,{
+      
+      if(!is.null(r$rm_js)){
+        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
+        r$rm_js <- NULL
+      }
+      
+      clear_css_border(r, css)
+      js <- r$css_class_identifier$js()
+      
+      print(js)
+      
+      try(r$remDr$executeScript(js, args = list(NULL)))
+      
+      r$rm_js <- r$css_class_identifier$js(border = FALSE)
+      
+    })
+    
+    shiny::observeEvent(input$clear_classifier, {
+      clear_css_border(r, css)
+      if(!is.null(r$rm_js)){
+        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
+        r$rm_js <- NULL
+      }
+    })
+    
+    # Lets save for out of module use.
+    shiny::observeEvent(input$save_classifier, {
+      
+      name_out <- input$classifier_name_out
+      
+      if(!is.null(name_out) & length(name_out) > 0){
+        
+        # Clearing buffers, again
+        if(!is.null(r$rm_js)){
+          try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
+          r$rm_js <- null
+        }
+        
+        if(is.null(r$selector_list)){
+          r$selector_list <- list()
+        }
+        
+        # Saving
+        temp <- list(r$css_class_identifier)
+        names(temp) <- name_out
+        r$selector_list <- append(r$selector_list, temp)
+        
+        r$css_class_identifier <- NULL
+        clear_selector_buffer(css_class)
+        
+      }
+      
+    })
+    
+    shiny::observeEvent(input$clear_selector, {
+      if(!is.null(r$rm_js)){
+        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
+        r$rm_js <- null
+      }
+      r$css_class_identifier <- NULL
+      clear_css_buffer(css)
+      clear_selector_buffer(css_class)
+    })
+    
     #observeEvent(input$test_js,{
     #  r$remDr$executeScript("let elements = document.querySelectorAll('li.card_card___ZlNq'); elements.forEach(el => { let contains = el.querySelector('img') !== null; let within = el.closest('ul.cta-cards_cards__ApWvd') !== null;if(contains && within){el.style.border = '2px solid red'}});", args = list(NULL))
     #})
   })
 }
 
-clear_css_buffer <- function(r, css){
+clear_css_border <- function(r, css){
   try(
     if(!is.null(r$last_css)){
       js <- paste0("document.querySelectorAll('",r$last_css,"')")
@@ -358,6 +445,18 @@ clear_css_buffer <- function(r, css){
   css$tag <- NULL
   css$class <- NULL
   css$attr <- NULL
+}
+
+clear_css_buffer <- function(css){
+  css$tag <- NULL
+  css$class <- NULL
+  css$attr <- NULL
+}
+
+clear_selector_buffer <- function(css_class){
+  css_class$parent <- NULL
+  css_class$main <- NULL
+  css_class$child <- NULL
 }
 
 select_add_style <- "height: 37px; padding: 3px 10px; line-height: 1; margin-top: 16px;"

@@ -62,13 +62,23 @@ selector <- R6::R6Class(
     js = function(border = TRUE){
       
       # Methods for flagging whether various css selectors match to adjacent/nested elements
-      js_self <- paste0("let elements = document.querySelectorAll('",self$css_self,"');")
+      print(str(self$css_self))
+      if(!is.null(self$css_self)){
+        if(trimws(self$css_self) != ""){
+        js_self <- paste0("let elements = document.querySelectorAll('",self$css_self,"');")
+        }else{
+          js_self <- paste0("let elements = document.querySelectorAll('","*","');")
+        }
+      }else{
+        js_self <- paste0("let elements = document.querySelectorAll('","*","');")
+      }
+      
       js_contains <- paste0("let contains = el.querySelector('", self$css_contains, "') !== null;")
       js_within <- paste0("let within = el.closest('", self$css_within,"') !== null;")
       
       logical <- c()
       js_query <- paste(js_self, "elements.forEach(el => {")
-      
+    
       # We need to append both logical identification and control structure to respond to css selectors, but only when provided
       if(!is.null(self$css_contains)){
         logical <- append(logical, "contains")
@@ -89,11 +99,18 @@ selector <- R6::R6Class(
         border <- "''"
       }
       
+      
       # Standard or conditional query?
-      if(length(logical) > 0){
+      if(!is.null(self$css_contains) | !is.null(self$css_within)){
+        
+        if(trimws(self$css_contains) != "" | trimws(self$css_within) != ""){
         js_query <- paste0(js_query, "if(", logical, "){el.style.border = ", border,"}});")
+        }else{
+          js_query <- paste0(js_query, "el.style.border = ", border, "})")
+        }
+
       }else{
-        js_query <- paste0(js_query, " el.style.border = ", border, "})")
+        js_query <- paste0(js_query, "el.style.border = ", border, "})")
       }
       
       return(js_query)
