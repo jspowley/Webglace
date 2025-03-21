@@ -394,7 +394,7 @@ mod_classification_1_server <- function(id, r){
         # Clearing buffers, again
         if(!is.null(r$rm_js)){
           try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-          r$rm_js <- null
+          r$rm_js <- NULL
         }
         
         if(is.null(r$selector_list)){

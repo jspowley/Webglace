@@ -82,13 +82,17 @@ selector <- R6::R6Class(
     
       # We need to append both logical identification and control structure to respond to css selectors, but only when provided
       if(!is.null(self$css_contains)){
-        logical <- append(logical, "contains")
-        js_query <- paste(js_query, js_contains)
+        if(trimws(self$css_contains) != ""){
+          logical <- append(logical, "contains")
+          js_query <- paste(js_query, js_contains)
+        }
       }
       
       if(!is.null(self$css_within)){
-        logical <- append(logical, "within")
-        js_query <- paste(js_query, js_within)
+        if(trimws(self$css_within) != "" & !is.null(self$css_within)){
+          logical <- append(logical, "within")
+          js_query <- paste(js_query, js_within)
+        }
       }
       
       logical <- paste(logical, collapse = " && ")
@@ -106,14 +110,17 @@ selector <- R6::R6Class(
         pass <- FALSE
         
 
-          if(trimws(self$css_contains) != "" ){
+        try(
+          if(trimws(self$css_contains) != "" & !is.null(self$css_contains)){
             pass <- TRUE
           }
+        )
         
-
-          if(trimws(self$css_within) != ""){
+        try(
+          if(trimws(self$css_within) != "" & !is.null(self$css_within)){
             pass <- TRUE
           }
+        )
 
         
         if(pass){
