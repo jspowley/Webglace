@@ -102,33 +102,29 @@ selector <- R6::R6Class(
       
       
       # Standard or conditional query?
-      if(!is.null(self$css_contains) | !is.null(self$css_within)){
         
         pass <- FALSE
         
-        try({
+
           if(trimws(self$css_contains) != "" ){
             pass <- TRUE
-          })
+          }
         
-        try({
+
           if(trimws(self$css_within) != ""){
             pass <- TRUE
           }
-        })
+
         
         if(pass){
           js_query <- paste0(js_query, "if(", logical, "){el.style.border = ", border,"}});")
         }else{
           js_query <- paste0(js_query, "el.style.border = ", border, "})")
         }
-
-      }else{
-        js_query <- paste0(js_query, "el.style.border = ", border, "})")
-      }
       
       return(js_query)
     }
+
   ))
 
 # For finding unique tag types within the page.
