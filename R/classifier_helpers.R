@@ -10,7 +10,7 @@ selector <- R6::R6Class(
     #text_self = NULL,
     
     initialize = function(
-      css_self, 
+      css_self = NULL, 
       css_within = NULL, 
       css_contains = NULL
       #text_self = NULL
@@ -63,6 +63,7 @@ selector <- R6::R6Class(
       
       # Methods for flagging whether various css selectors match to adjacent/nested elements
       print(str(self$css_self))
+      
       if(!is.null(self$css_self)){
         if(trimws(self$css_self) != ""){
         js_self <- paste0("let elements = document.querySelectorAll('",self$css_self,"');")
@@ -103,8 +104,21 @@ selector <- R6::R6Class(
       # Standard or conditional query?
       if(!is.null(self$css_contains) | !is.null(self$css_within)){
         
-        if(trimws(self$css_contains) != "" | trimws(self$css_within) != ""){
-        js_query <- paste0(js_query, "if(", logical, "){el.style.border = ", border,"}});")
+        pass <- FALSE
+        
+        try({
+          if(trimws(self$css_contains) != "" ){
+            pass <- TRUE
+          })
+        
+        try({
+          if(trimws(self$css_within) != ""){
+            pass <- TRUE
+          }
+        })
+        
+        if(pass){
+          js_query <- paste0(js_query, "if(", logical, "){el.style.border = ", border,"}});")
         }else{
           js_query <- paste0(js_query, "el.style.border = ", border, "})")
         }
