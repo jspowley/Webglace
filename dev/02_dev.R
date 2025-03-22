@@ -24,6 +24,7 @@ golem::add_module(name = "initialize", with_test = TRUE)
 golem::add_module(name = "welcome", with_test = TRUE)
 golem::add_module(name = "browser", with_test = TRUE)
 golem::add_module(name = "classification_1", with_test = TRUE)
+golem::add_module(name = "testing_suite", with_test = TRUE)
 
 # Name of the module
 # golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
