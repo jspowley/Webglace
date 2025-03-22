@@ -66,7 +66,7 @@ mod_classification_1_ui <- function(id) {
                 shiny::actionButton(ns("clear_classifier"), "Clear Page"),
                 col_widths = c(6,6)
               ),
-              shiny::textInput(ns("classifier_name_out"), "Selector Name:"),
+              shiny::uiOutput(ns("classifier_name_ui")),
               shiny::actionButton(ns("save_classifier"), "Export to Flow Control"),
               shiny::actionButton(ns("clear_selector"), "Delete Selector"),
               col_widths = c(12)
@@ -88,12 +88,16 @@ mod_classification_1_server <- function(id, r){
 
     # Initialize form:
     
-    output$tag_select <- renderUI(p("To begin, Load HTML"))
-    output$class_select <- renderUI(p("To begin, Load HTML"))
-    output$attr_name_select <- renderUI(p("To begin, Load HTML"))
-    output$attr_value_select <- renderUI(p())
+    output$tag_select <- shiny::renderUI(p("To begin, Load HTML"))
+    output$class_select <- shiny::renderUI(p("To begin, Load HTML"))
+    output$attr_name_select <- shiny::renderUI(p("To begin, Load HTML"))
+    output$attr_value_select <- shiny::renderUI(p())
     
     css <- shiny::reactiveValues()
+    
+    output$classifier_name_ui <- shiny::renderUI({
+      shiny::textInput(ns("classifier_name_out"), "Selector Name:")
+    })
     
     # Update html pull for forms
     shiny::observeEvent(input$page_update,{
@@ -409,6 +413,10 @@ mod_classification_1_server <- function(id, r){
         r$css_class_identifier <- NULL
         clear_selector_buffer(css_class)
         
+        # Clearing name form
+        output$classifier_name_ui <- shiny::renderUI({
+          shiny::textInput(ns("classifier_name_out"), "Selector Name:")
+        })
       }
       
     })
@@ -416,7 +424,7 @@ mod_classification_1_server <- function(id, r){
     shiny::observeEvent(input$clear_selector, {
       if(!is.null(r$rm_js)){
         try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-        r$rm_js <- null
+        r$rm_js <- NULL
       }
       r$css_class_identifier <- NULL
       clear_css_buffer(css)
