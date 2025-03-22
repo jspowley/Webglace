@@ -87,6 +87,7 @@ mod_classification_1_server <- function(id, r){
     ns <- session$ns
 
     # Initialize form:
+    m <- reactiveValues() # module specific reactive value list.
     
     output$tag_select <- shiny::renderUI(p("To begin, Load HTML"))
     output$class_select <- shiny::renderUI(p("To begin, Load HTML"))
@@ -239,9 +240,9 @@ mod_classification_1_server <- function(id, r){
 
       if(length(css_selector) > 0){
       
-      if(!is.null(r$last_css)){
+      if(!is.null(m$last_css)){
         # Removing previous selections if/when they exist
-        js <- paste0("document.querySelectorAll('",r$last_css,"')")
+        js <- paste0("document.querySelectorAll('",m$last_css,"')")
         js <- 
           paste0(js,
                  ".forEach(el => el.style.border = '');"
@@ -251,9 +252,9 @@ mod_classification_1_server <- function(id, r){
       }
       
         # Clear out R6 selector content if any
-      if(!is.null(r$rm_js)){
-        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-        r$rm_js <- NULL
+      if(!is.null(m$rm_js)){
+        try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
+        m$rm_js <- NULL
       }
         
       js <- paste0("document.querySelectorAll('",css_selector,"')")
@@ -263,7 +264,7 @@ mod_classification_1_server <- function(id, r){
         )
       try(r$remDr$executeScript(js, args = list(NULL)))
       
-      r$last_css <- css_selector
+      m$last_css <- css_selector
       
       }
     })
@@ -271,7 +272,7 @@ mod_classification_1_server <- function(id, r){
     # Removes the red boxing for the css selected. Resets the selector buffers.
     observeEvent(input$remove,{
       
-      clear_css_border(r, css)
+      clear_css_border(r, m, css)
       
       css$tag <- NULL
       css$class <- NULL
@@ -284,7 +285,7 @@ mod_classification_1_server <- function(id, r){
     shiny::observeEvent(input$to_parent,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$parent <- input$css_select
-        clear_css_border(r, css)
+        clear_css_border(r, m, css)
         clear_css_buffer(css)
       }else{
         css_class$parent <- NULL
@@ -294,7 +295,7 @@ mod_classification_1_server <- function(id, r){
     shiny::observeEvent(input$to_main,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$main <- input$css_select
-        clear_css_border(r, css)
+        clear_css_border(r, m, css)
         clear_css_buffer(css)
       }else{
         css_class$main <- NULL
@@ -304,7 +305,7 @@ mod_classification_1_server <- function(id, r){
     shiny::observeEvent(input$to_child,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$child <- input$css_select
-        clear_css_border(r, css)
+        clear_css_border(r, m, css)
         clear_css_buffer(css)
       }else{
         css_class$child <- NULL
@@ -343,15 +344,15 @@ mod_classification_1_server <- function(id, r){
       
       # Initializing the R6 Class
       print("INITIALIZING R6")
-      r$css_class_identifier <- selector$new(
+      m$css_class_identifier <- selector$new(
         css_self = css_class$main,
         css_contains = css_class$child,
         css_within = css_class$parent
       )
         
-      print(is.null(r$css_class_identifier))
+      print(is.null(m$css_class_identifier))
       # Initializing saving form for workflow export
-      if(!is.null(r$css_class_identifier)){
+      if(!is.null(m$css_class_identifier)){
         print("rendering form")
         output$testing_form <- shiny::renderUI({
           
@@ -364,27 +365,27 @@ mod_classification_1_server <- function(id, r){
     # For testing the classification script (R6 Class for downstream use)
     shiny::observeEvent(input$test_classifier,{
       
-      if(!is.null(r$rm_js)){
-        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-        r$rm_js <- NULL
+      if(!is.null(m$rm_js)){
+        try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
+        m$rm_js <- NULL
       }
       
-      clear_css_border(r, css)
-      js <- r$css_class_identifier$js()
+      clear_css_border(r, m, css)
+      js <- m$css_class_identifier$js()
       
       print(js)
       
       try(r$remDr$executeScript(js, args = list(NULL)))
       
-      r$rm_js <- r$css_class_identifier$js(border = FALSE)
+      m$rm_js <- m$css_class_identifier$js(border = FALSE)
       
     })
     
     shiny::observeEvent(input$clear_classifier, {
-      clear_css_border(r, css)
-      if(!is.null(r$rm_js)){
-        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-        r$rm_js <- NULL
+      clear_css_border(r, m, css)
+      if(!is.null(m$rm_js)){
+        try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
+        m$rm_js <- NULL
       }
     })
     
@@ -396,9 +397,9 @@ mod_classification_1_server <- function(id, r){
       if(!is.null(name_out) & length(name_out) > 0){
         
         # Clearing buffers, again
-        if(!is.null(r$rm_js)){
-          try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-          r$rm_js <- NULL
+        if(!is.null(m$rm_js)){
+          try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
+          m$rm_js <- NULL
         }
         
         if(is.null(r$selector_list)){
@@ -406,11 +407,11 @@ mod_classification_1_server <- function(id, r){
         }
         
         # Saving
-        temp <- list(r$css_class_identifier)
+        temp <- list(m$css_class_identifier)
         names(temp) <- name_out
         r$selector_list <- append(r$selector_list, temp)
         
-        r$css_class_identifier <- NULL
+        m$css_class_identifier <- NULL
         clear_selector_buffer(css_class)
         
         # Clearing name form
@@ -422,11 +423,11 @@ mod_classification_1_server <- function(id, r){
     })
     
     shiny::observeEvent(input$clear_selector, {
-      if(!is.null(r$rm_js)){
-        try(r$remDr$executeScript(r$rm_js, args = list(NULL)))
-        r$rm_js <- NULL
+      if(!is.null(m$rm_js)){
+        try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
+        m$rm_js <- NULL
       }
-      r$css_class_identifier <- NULL
+      m$css_class_identifier <- NULL
       clear_css_buffer(css)
       clear_selector_buffer(css_class)
     })
@@ -437,16 +438,16 @@ mod_classification_1_server <- function(id, r){
   })
 }
 
-clear_css_border <- function(r, css){
+clear_css_border <- function(r, m, css){
   try(
-    if(!is.null(r$last_css)){
-      js <- paste0("document.querySelectorAll('",r$last_css,"')")
+    if(!is.null(m$last_css)){
+      js <- paste0("document.querySelectorAll('",m$last_css,"')")
       js <- 
         paste0(js,
                ".forEach(el => el.style.border = '');"
         )
       r$remDr$executeScript(js, args = list(NULL))
-      r$last_css <- NULL
+      m$last_css <- NULL
     }
   )
   
