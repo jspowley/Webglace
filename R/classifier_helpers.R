@@ -23,6 +23,76 @@ selector <- R6::R6Class(
       
     },
     
+    # Function for pulling css tags
+    get_tag = function(css_in){
+      
+      tag <- css_in %>% 
+        stringr::str_extract("[A-Za-z0-9\\-\\_]*[\\.\\[]") %>% 
+        stringr::str_remove("\\.") %>% 
+        stringr::str_remove("\\[")
+      
+      if(!is.na(tag)){
+        if(tag == ""){
+          tag <- "*"
+        }
+      }
+      
+      if(!stringr::str_detect(css_in, "\\.|\\[")){
+        tag <- css_in
+      }
+      
+      return(tag)
+    },
+    
+    # Function for pulling classes
+    get_classes = function(css_in){
+      
+      classes <- 
+        css_in %>% 
+        stringr::str_extract_all("\\.[A-Za-z0-9\\-\\_]+(?=[\\.\\[])|\\.[A-Za-z0-9\\-\\_]+$")
+      
+      classes_out <- list()
+      
+      for(c in classes){
+        c_out <- c %>% 
+          stringr::str_remove_all("\\.") %>% 
+          stringr::str_remove("\\[")
+        
+        classes_out <- append(classes_out, c_out)
+      }
+      
+      classes <- classes_out
+      
+      if(!is.list(classes)){
+        if(classes == "character(0)"){
+          classes <- "*"
+        }
+      }
+      
+      return(classes)
+    },
+    
+    # Function for pulling attributes
+    get_attr = function(css_in){
+      
+      attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=]*\\]")
+      
+      if(length(attr_out[[1]]) == 0){
+        attr_out <- "*"
+      }
+      
+      return(attr_out)
+    },
+    
+    xpath = function(){
+      xpath_out <- "//"
+      
+      "parent portion of xpath"
+      if(is.null(self$within)){
+        
+      }
+    },
+    
     scrape = function(html_in){
       
       # Filter for 'contained within' css class
