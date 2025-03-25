@@ -65,8 +65,12 @@ selector <- R6::R6Class(
       
       if(!is.list(classes)){
         if(classes == "character(0)"){
-          classes <- "*"
+          classes <- NULL
         }
+      }
+      
+      if(length(classes) == 0){
+        classes <- NULL
       }
       
       return(classes)
@@ -78,19 +82,73 @@ selector <- R6::R6Class(
       attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=]*\\]")
       
       if(length(attr_out[[1]]) == 0){
-        attr_out <- "*"
+        attr_out <- NULL
       }
       
       return(attr_out)
     },
     
+    # Gets an xpath ready list for classes
+    xpath_classes = function(css_in){
+      
+      classes <- self$get_classes(css_in)
+      class_buffer <- list()
+      
+      if(!is.null(classes)){
+        for(c in classes){
+          c_out <- paste0("contains(concat(' ', normalize-space(@class), ' '), ' ", c, " ')")
+          class_buffer <- append(class_buffer, c_out)
+        }
+      }
+      
+      return(class_buffer)
+    },
+    
+    # Gets an xpath ready list for attributes
+    xpath_attrs = function(css_in){
+      
+      attributes <- self$get_attr(css_in)
+      attr_buffer <- list()
+      
+      if(!is.null(attributes)){
+        for(a in attributes){
+          a_out <- stringr::str_remove_all(a, pattern = "\\[|\\]")
+          a_out <- paste0("@", trimws(a_out))
+          attr_buffer <- append(attr_buffer, a_out)
+        }
+      }
+      
+      return(attr_buffer)
+      
+    },
+    
     xpath = function(){
+      
       xpath_out <- "//"
       
-      "parent portion of xpath"
-      if(is.null(self$within)){
-        
+      # Main
+      if(is.null(self$css_self)){
+        xpath_out <- paste0(xpath_out, "*")
+      }else{
+        xpath_out <- paste0(xpath_out, self$get_tag(self$css_self))
       }
+      
+      xpath_out <- paste0(xpath_out, "[")
+      
+      # Adding Classes
+      
+      c_a_buffer <- list()
+      c_a_buffer <- append(c_a_buffer, self$xpath_classes(self$css_self))
+      c_a_buffer <- append(c_a_buffer, self$xpath_attrs(self$css_self))
+      
+      c_a_buffer <- paste0(c_a_buffer, collapse = " and ")
+      xpath_out <- paste0(xpath_out, c_a_buffer)
+      
+      xpath_out <- paste0(xpath_out, "]")
+      
+      xpath_out <- stringr::str_remove_all(xpath_out, pattern = "//[//]")
+      
+      return(xpath_out)
     },
     
     scrape = function(html_in){
@@ -214,17 +272,6 @@ unique_tags <- function(html_in){
     return()
 }
 
-readRDS("test_page.rds") %>% 
-  rvest::read_html() %>% 
-  unique_tags()
-
-s <- selector$new("li.card_card___ZlNq", "ul.cta-cards_cards__ApWvd", "img")
-nodes <- s$scrape(readRDS("test_page.rds") %>% rvest::read_html())
-
-nodes
-
-s$js()
-
 unique_classes <- function(html_in, tag_in = NULL){
   
   css_selector <- ifelse(is.null(tag_in), "*", tag_in)
@@ -267,10 +314,6 @@ attr_names <- function(html_in, tag_in, class_in = NULL){
   
 }
 
-readRDS("test_page.rds") %>% 
-  rvest::read_html() %>% 
-  rvest::html_nodes("*")
-
 attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
   
   if(tag_in == "(No Tag)"){
@@ -294,10 +337,4 @@ attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
     return()
 }
 
-readRDS("test_page.rds") %>% 
-  rvest::read_html() %>% 
-  rvest::html_nodes("*.text")
-
-for(n in nodes){
-  n %>% rvest::html_node("a") %>% length() %>% print()
-}
+temp <- selector$new("tag1.class1[attr1 = 'value1'", "tag2.class2[attr2 = 'value2'", "tag3.class3[attr3 = 'value3'")
