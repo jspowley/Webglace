@@ -79,10 +79,19 @@ selector <- R6::R6Class(
     # Function for pulling attributes
     get_attr = function(css_in){
       
+      print("attr out")
       attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=]*\\]")
       
-      if(length(attr_out[[1]]) == 0){
+      print(str(attr_out))
+      
+      if(length(attr_out) == 0){
+        print("l0")
         attr_out <- NULL
+      }else{
+        print("l>0")
+        if(length(attr_out[[1]]) == 0){
+          attr_out <- NULL
+        }
       }
       
       return(attr_out)
@@ -142,11 +151,44 @@ selector <- R6::R6Class(
       c_a_buffer <- append(c_a_buffer, self$xpath_attrs(self$css_self))
       
       c_a_buffer <- paste0(c_a_buffer, collapse = " and ")
-      xpath_out <- paste0(xpath_out, c_a_buffer)
+      
+      ancestor_buffer <- list()
+      ancestor_buffer <- append(ancestor_buffer, self$xpath_classes(self$css_within))
+      ancestor_buffer <- append(ancestor_buffer, self$xpath_attrs(self$css_within))
+      ancestor_buffer <- paste0(ancestor_buffer, collapse = " and ")
+      
+      if(is.null(self$css_within)){
+        a_tag <- paste0("*")
+      }else{
+        a_tag <- paste0(self$get_tag(self$css_within))
+      }
+      
+      ancestor_buffer <- paste0("ancestor::", a_tag, "[", ancestor_buffer, "]")
+      
+      desc_buffer <- list()
+      desc_buffer <- append(desc_buffer, self$xpath_classes(self$css_contains))
+      desc_buffer <- append(desc_buffer, self$xpath_attrs(self$css_contains))
+      desc_buffer <- paste0(desc_buffer, collapse = " and ")
+      
+      if(is.null(self$css_contains)){
+        d_tag <- paste0("*")
+      }else{
+        d_tag <- paste0(self$get_tag(self$css_contains))
+      }
+      
+      desc_buffer <- paste0("descendant::", d_tag, "[", desc_buffer, "]")
+      
+      
+      inner_buffer <- paste(c_a_buffer, ancestor_buffer, desc_buffer, sep = " and ")
+      
+      xpath_out <- paste0(xpath_out, inner_buffer)
       
       xpath_out <- paste0(xpath_out, "]")
       
-      xpath_out <- stringr::str_remove_all(xpath_out, pattern = "//[//]")
+      xpath_out <- stringr::str_remove_all(
+        xpath_out, pattern = 
+        " and descendant\\:\\:\\*\\[\\]| and ancestor\\:\\:\\*\\[\\]| descendant\\:\\:\\*\\[\\]| ancestor\\:\\:\\*\\[\\]")
+      xpath_out <- stringr::str_remove_all(xpath_out, pattern = "\\[\\]")
       
       return(xpath_out)
     },
@@ -337,4 +379,4 @@ attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
     return()
 }
 
-temp <- selector$new("tag1.class1[attr1 = 'value1'", "tag2.class2[attr2 = 'value2'", "tag3.class3[attr3 = 'value3'")
+temp <- selector$new("tag1.class1[attr1 = 'value1']", "tag2.class2[attr2 = 'value2']", "tag3.class3[attr3 = 'value3']")
