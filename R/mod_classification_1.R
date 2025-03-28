@@ -67,7 +67,7 @@ mod_classification_1_ui <- function(id) {
                 col_widths = c(6,6)
               ),
               shiny::uiOutput(ns("classifier_name_ui")),
-              shiny::actionButton(ns("save_classifier"), "Export to Flow Control"),
+              shiny::actionButton(ns("save_classifier"), "Export to Testing"),
               shiny::actionButton(ns("clear_selector"), "Delete Selector"),
               col_widths = c(12)
             )),

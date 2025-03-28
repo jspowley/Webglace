@@ -188,6 +188,7 @@ selector <- R6::R6Class(
       xpath_out <- stringr::str_remove_all(
         xpath_out, pattern = 
         " and descendant\\:\\:\\*\\[\\]| and ancestor\\:\\:\\*\\[\\]| descendant\\:\\:\\*\\[\\]| ancestor\\:\\:\\*\\[\\]")
+      xpath_out <- stringr::str_replace(xpath_out, pattern = "\\[ and ", replacement = "\\[")
       xpath_out <- stringr::str_remove_all(xpath_out, pattern = "\\[\\]")
       
       return(xpath_out)

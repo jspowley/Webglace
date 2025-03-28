@@ -83,6 +83,8 @@ mod_testing_suite_server <- function(id, r){
         
         xpath_in <- selector_in$xpath()
         
+        print(xpath_in)
+        
         xpath_nodes <- 
           page_out %>% 
           rvest::html_elements(xpath = xpath_in)
@@ -102,6 +104,7 @@ mod_testing_suite_server <- function(id, r){
         shiny::req(module_buffer$xpath)
         shiny::req(module_buffer$css)
         
+        # print(module_buffer$css)
         # html and head required since our main html structure is stripped from our scraping filters.
         html_css <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
@@ -118,9 +121,11 @@ mod_testing_suite_server <- function(id, r){
           
         # writeLines(html_css, "css.html")
 
+        # print(module_buffer$xpath)
+        
         html_xpath <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
-          module_buffer$xpath,
+           module_buffer$xpath,
           "</body></html>",
           collapse = ""
         ) %>% 
@@ -130,18 +135,18 @@ mod_testing_suite_server <- function(id, r){
         
         # writeLines(html_xpath, "xpath.html")
         
-        Sys.sleep(0.5)
-        
         output$testing_viewport <- 
           renderUI({
             bslib::layout_columns(
               bslib::card(
                 bslib::card_header("CSS Scrape:"),
-                tags$iframe(src = html_css, width = "100%", height = "1080px")
+                tags$iframe(src = html_css, width = "100%", height = "1080px"),
+                full_screen = TRUE
               ),
               bslib::card(
                 bslib::card_header("XPath Scrape:"),
-                tags$iframe(src = html_xpath, width = "100%", height = "1080px")
+                tags$iframe(src = html_xpath, width = "100%", height = "1080px"),
+                full_sreen = TRUE
               ),
               col_widths = c(6,6)
             )
