@@ -19,7 +19,8 @@ mod_testing_suite_ui <- function(id) {
       sidebar = bslib::sidebar(
         width = 600, 
         uiOutput(ns("selector_cards"))
-      )
+      ),
+      uiOutput(ns("testing_viewport"))
     )
   )
     
@@ -34,6 +35,7 @@ mod_testing_suite_server <- function(id, r){
       
       # Initiating dynamic input lists
       input_array <- reactiveValues()
+      module_buffer <- reactiveValues()
     
       shiny::observeEvent(r$selector_list, {
         
@@ -46,7 +48,6 @@ mod_testing_suite_server <- function(id, r){
           names(selectors)[i] <- n
         }
         
-        saveRDS(selectors, "temp.rds")
         print(str(selectors))
         
         output$selector_cards <- renderUI({
@@ -72,9 +73,59 @@ mod_testing_suite_server <- function(id, r){
       })
       
       observeEvent(input_array$scrape, {
-        print(str(input_array$scrape))
+        
+        page_out <- r$remDr$getPageSource()
+        page_out <- rvest::read_html(page_out[[1]])
+        
+        selector_name <- stringr::str_remove(input_array$scrape[1], pattern = "scrape_")
+        selector_in <-  r$selector_list[[selector_name]]
+        
+        xpath_in <- selector_in$xpath()
+        
+        xpath_nodes <- 
+          page_out %>% 
+          rvest::html_elements(xpath = xpath_in)
+        
+        css_nodes <- selector_in$scrape(page_out)
+        
+        module_buffer$xpath <- xpath_nodes %>% as.character()
+        module_buffer$css <- css_nodes %>% as.character()
+        
       })
       
+      observeEvent(list(module_buffer$xpath, module_buffer$css),{
+        
+        shiny::req(module_buffer$xpath)
+        shiny::req(module_buffer$css)
+        
+        html_doc <- paste0(
+          "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
+          module_buffer$css,
+          "</body></html>"
+        )
+        
+        writeLines(html_doc, "css.html")
+        
+        html_doc <- paste0(
+          "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
+          module_buffer$xpath,
+          "</body></html>"
+        )
+        
+        writeLines(html_doc, "xpath.html")
+        
+        Sys.sleep(0.5)
+        
+        output$testing_viewport <- 
+          renderUI({
+            bslib::layout_columns(
+              tags$iframe(src = "test.html", width = "100%", height = "1080px"),
+              tags$iframe(src = "test.html", width = "100%", height = "1080px"),
+              col_widths = c(6,6)
+            )
+          })
+        
+      })
       #facet_select <- sapply(facets, function(f_name){input[[paste0("f_",f_name)]]}, simplify = FALSE)
   })
 }
