@@ -72,6 +72,7 @@ mod_testing_suite_server <- function(id, r){
         })
       })
       
+      # Trigger for xpath vs css testing screen.
       observeEvent(input_array$scrape, {
         
         page_out <- r$remDr$getPageSource()
@@ -95,38 +96,60 @@ mod_testing_suite_server <- function(id, r){
       
       observeEvent(list(module_buffer$xpath, module_buffer$css),{
         
+        # For viewing xpath and css selector scrape data at the same time, to compare for consistency.
+        # IFrames are very important here since it prevents header css and formatting from hijacking our app's formatting.
+        
         shiny::req(module_buffer$xpath)
         shiny::req(module_buffer$css)
         
-        html_doc <- paste0(
+        # html and head required since our main html structure is stripped from our scraping filters.
+        html_css <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
           module_buffer$css,
-          "</body></html>"
-        )
-        
-        writeLines(html_doc, "css.html")
-        
-        html_doc <- paste0(
+          "</body></html>",
+          collapse = ""
+        ) %>% 
+          charToRaw() %>% 
+          base64enc::base64encode() %>% 
+          paste0("data:text/html;base64,", .) 
+        # https://stackoverflow.com/questions/28766667/iframe-src-set-large-base64-data
+        # https://github.com/MetaMask/metamask-mobile/issues/5441
+        # Base64 as a convenient out for me not being able to figure out how iframe filepaths work in GOLEM
+          
+        # writeLines(html_css, "css.html")
+
+        html_xpath <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
           module_buffer$xpath,
-          "</body></html>"
-        )
+          "</body></html>",
+          collapse = ""
+        ) %>% 
+          charToRaw() %>% 
+          base64enc::base64encode() %>% 
+          paste0("data:text/html;base64,", .)
         
-        writeLines(html_doc, "xpath.html")
+        # writeLines(html_xpath, "xpath.html")
         
         Sys.sleep(0.5)
         
         output$testing_viewport <- 
           renderUI({
             bslib::layout_columns(
-              tags$iframe(src = "test.html", width = "100%", height = "1080px"),
-              tags$iframe(src = "test.html", width = "100%", height = "1080px"),
+              bslib::card(
+                bslib::card_header("CSS Scrape:"),
+                tags$iframe(src = html_css, width = "100%", height = "1080px")
+              ),
+              bslib::card(
+                bslib::card_header("XPath Scrape:"),
+                tags$iframe(src = html_xpath, width = "100%", height = "1080px")
+              ),
               col_widths = c(6,6)
             )
           })
         
       })
       #facet_select <- sapply(facets, function(f_name){input[[paste0("f_",f_name)]]}, simplify = FALSE)
+      
   })
 }
     

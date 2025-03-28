@@ -146,7 +146,20 @@ mod_browser_server <- function(id, r){
         output$html_raw <- shiny::renderText({""})
         
         output$html_preview <- shiny::renderUI({
-          htmltools::HTML(as.character(r$page_html))
+          
+          # Duplicated from the testing suite, this is where I originally noticed the header hijack bug.
+          html_64 <- paste0(
+            "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
+            r$page_html,
+            "</body></html>",
+            collapse = ""
+          ) %>% 
+            charToRaw() %>% 
+            base64enc::base64encode() %>% 
+            paste0("data:text/html;base64,", .)
+          
+          tags$iframe(src = html_64, width = "100%", height = "1080px")
+          
         })
         
       }
