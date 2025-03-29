@@ -381,6 +381,7 @@ mod_classification_1_server <- function(id, r){
       
     })
     
+    # Removes the border for the selector test.
     shiny::observeEvent(input$clear_classifier, {
       clear_css_border(r, m, css)
       if(!is.null(m$rm_js)){

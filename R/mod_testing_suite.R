@@ -62,6 +62,24 @@ mod_testing_suite_server <- function(id, r){
                 shiny::actionButton(ns(paste0("text_",n)), "Pull Text", style = select_add_style_2),
                 shiny::actionButton(ns(paste0("browser_",n)), "View Browser", style = select_add_style_2),
                 shiny::actionButton(ns(paste0("click_",n)), "Click Element", style = select_add_style_2)
+              ),
+              shiny::fluidRow(
+                shiny::div(
+                  style = "padding-right: 33px;",
+                  bslib::layout_columns(
+                    style = "gap: 5px; padding: 0;",
+                    shiny::actionButton(
+                      ns(paste0("properties_",n)), 
+                      "View Properties", 
+                      sytle = select_add_style_2),
+                    shiny::actionButton(
+                      ns(paste0("download_",n)), 
+                      label = NULL, 
+                      icon = shiny::icon("download"),
+                      sytle = select_add_style_2),
+                    col_widths = c(10,2)
+                  )
+                )
               )
             )
           })

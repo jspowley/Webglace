@@ -85,10 +85,10 @@ selector <- R6::R6Class(
       print(str(attr_out))
       
       if(length(attr_out) == 0){
-        print("l0")
+        # print("l0")
         attr_out <- NULL
       }else{
-        print("l>0")
+        # print("l>0")
         if(length(attr_out[[1]]) == 0){
           attr_out <- NULL
         }
@@ -328,10 +328,41 @@ selector <- R6::R6Class(
       
     },
     
-    click = function(remDr){
+    click = function(remDr, text = NULL, exact_text = FALSE){
       
-      e <- remDr$findElement(using = "xpath", value = self$xpath())
+      if(is.null(text)){
+        path <- self$xpath()
+      }else{
+        path <- self$xpath_text(text = text, exact = exact_text)
+      }
+      
+      e <- remDr$findElement(using = "xpath", value = path)
       e$clickElement()
+      
+    },
+    
+    xpath_text = function(text, exact = FALSE, xpath_in = NULL){
+      
+      if(!is.null(xpath_in)){
+        xpath <- xpath_in
+      }else{
+        xpath <- self$xpath()
+      }
+      
+      if(exact){
+        xpath_inject <- paste0("text()='",text,"'")
+      }else{
+        xpath_inject <- paste0("contains(text(), '",text,"')")
+      }
+      
+      if(stringr::str_detect(xpath, "\\[")){
+        # By definition of prior xpath function
+        xpath <- stringr::str_replace(xpath, pattern = "\\[", replacement = paste0("[", xpath_inject, " and "))
+      }else{
+        xpath <- paste0(xpath, "[", xpath_inject, "]")
+      }
+      
+      return(xpath)
       
     }
 
