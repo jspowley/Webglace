@@ -56,7 +56,13 @@ mod_testing_suite_server <- function(id, r){
             print(n)
             bslib::card(
               bslib::card_header(paste0("Name: ",n)),
-              shiny::actionButton(ns(paste0("scrape_",n)), "Scrape")
+              shiny::div(style = select_div_style_2,
+                shiny::actionButton(ns(paste0("scrape_",n)), "Scrape", style = select_add_style_2),
+                shiny::actionButton(ns(paste0("links_",n)), "Pull Links", style = select_add_style_2),
+                shiny::actionButton(ns(paste0("text_",n)), "Pull Text", style = select_add_style_2),
+                shiny::actionButton(ns(paste0("browser_",n)), "View Browser", style = select_add_style_2),
+                shiny::actionButton(ns(paste0("click_",n)), "Click Element", style = select_add_style_2)
+              )
             )
           })
         })
@@ -64,16 +70,107 @@ mod_testing_suite_server <- function(id, r){
       
       # reference to EIAtools and the accompanying stack overflow post for flexible inputs
       observe({ 
+        
+        print("RESETTING FLEXIBLE INPUT ARRAY")
+        
         lapply(names(r$selector_list), function(n) {
           id <- paste0("scrape_", n)
           observeEvent(input[[id]], {
             input_array$scrape <- list(id, input[[id]])
           })
         })
+      
+      # Link updates
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("links_", n)
+          observeEvent(input[[id]], {
+            input_array$links <- list(id, input[[id]])
+          })
+        })
+      
+        # Text updates
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("text_", n)
+          observeEvent(input[[id]], {
+            input_array$text <- list(id, input[[id]])
+          })
+        })
+        
+        # Switch to browser view for live interaction testing
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("browser_", n)
+          observeEvent(input[[id]], {
+            input_array$browser <- list(id, input[[id]])
+          })
+        })
+        
+        # Clicking an xpath element
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("click_", n)
+          observeEvent(input[[id]], {
+            input_array$click <- list(id, input[[id]])
+          })
+        })
+        
+      })
+      
+      observeEvent(input_array$click,{
+        
+        selector_name <- stringr::str_remove(input_array$click[1], pattern = "click_")
+        selector_in <-  r$selector_list[[selector_name]]
+        
+        selector_in$click(r$remDr)
+        
+      })
+      
+      # Triggers the text for text pull
+      observeEvent(input_array$text, {
+        
+        print("TEXT PRINT OBSERVED")
+        
+        page_out <- r$remDr$getPageSource()
+        page_out <- rvest::read_html(page_out[[1]])
+        selector_name <- stringr::str_remove(input_array$text[1], pattern = "text_")
+        selector_in <-  r$selector_list[[selector_name]]
+        
+        text_within <- selector_in$text(page_out)
+        
+        output$testing_viewport <- renderUI({
+          bslib::card(
+            bslib::card_header("Text Content"),
+            HTML(paste(text_within, collapse = "<br>"))
+          )
+        })
+        
+      })
+      
+      # Triggers the href attribute pull test.
+      observeEvent(input_array$links, {
+        
+        print("HREF PRINT OBSERVED")
+        
+        page_out <- r$remDr$getPageSource()
+        page_out <- rvest::read_html(page_out[[1]])
+        selector_name <- stringr::str_remove(input_array$links[1], pattern = "links_")
+        selector_in <-  r$selector_list[[selector_name]]
+        
+        href_within <- selector_in$href(page_out)
+        
+        output$testing_viewport <- renderUI({
+          bslib::card(
+            bslib::card_header("Hyperlinks"),
+            HTML(paste(href_within, collapse = "<br>"))
+          )
+        })
+        
+        
+        
       })
       
       # Trigger for xpath vs css testing screen.
       observeEvent(input_array$scrape, {
+        
+        print("SCRAPE OBSERVED")
         
         page_out <- r$remDr$getPageSource()
         page_out <- rvest::read_html(page_out[[1]])
@@ -91,24 +188,12 @@ mod_testing_suite_server <- function(id, r){
         
         css_nodes <- selector_in$scrape(page_out)
         
-        module_buffer$xpath <- xpath_nodes %>% as.character()
-        module_buffer$css <- css_nodes %>% as.character()
+        xpath <- xpath_nodes %>% as.character()
+        css <- css_nodes %>% as.character()
         
-      })
-      
-      observeEvent(list(module_buffer$xpath, module_buffer$css),{
-        
-        # For viewing xpath and css selector scrape data at the same time, to compare for consistency.
-        # IFrames are very important here since it prevents header css and formatting from hijacking our app's formatting.
-        
-        shiny::req(module_buffer$xpath)
-        shiny::req(module_buffer$css)
-        
-        # print(module_buffer$css)
-        # html and head required since our main html structure is stripped from our scraping filters.
         html_css <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
-          module_buffer$css,
+          css,
           "</body></html>",
           collapse = ""
         ) %>% 
@@ -118,14 +203,10 @@ mod_testing_suite_server <- function(id, r){
         # https://stackoverflow.com/questions/28766667/iframe-src-set-large-base64-data
         # https://github.com/MetaMask/metamask-mobile/issues/5441
         # Base64 as a convenient out for me not being able to figure out how iframe filepaths work in GOLEM
-          
-        # writeLines(html_css, "css.html")
-
-        # print(module_buffer$xpath)
         
         html_xpath <- paste0(
           "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>",
-           module_buffer$xpath,
+          xpath,
           "</body></html>",
           collapse = ""
         ) %>% 
@@ -133,19 +214,17 @@ mod_testing_suite_server <- function(id, r){
           base64enc::base64encode() %>% 
           paste0("data:text/html;base64,", .)
         
-        # writeLines(html_xpath, "xpath.html")
-        
         output$testing_viewport <- 
           renderUI({
             bslib::layout_columns(
               bslib::card(
                 bslib::card_header("CSS Scrape:"),
-                tags$iframe(src = html_css, width = "100%", height = "1080px"),
+                tags$iframe(src = html_css, width = "100%", height = "650px"),
                 full_screen = TRUE
               ),
               bslib::card(
                 bslib::card_header("XPath Scrape:"),
-                tags$iframe(src = html_xpath, width = "100%", height = "1080px"),
+                tags$iframe(src = html_xpath, width = "100%", height = "650px"),
                 full_sreen = TRUE
               ),
               col_widths = c(6,6)
@@ -153,10 +232,19 @@ mod_testing_suite_server <- function(id, r){
           })
         
       })
-      #facet_select <- sapply(facets, function(f_name){input[[paste0("f_",f_name)]]}, simplify = FALSE)
       
+      observeEvent(input_array$browser,{
+        output$testing_viewport <- renderUI({
+          viewport_standalone()
+        })
+      })
+        
   })
 }
+
+select_add_style_2 <- "height: 37px; padding: 3px 10px; line-height: 1; margin-top: 16px;"
+select_div_style_2 <- "display: flex; align-items: center; gap: 5px; padding: 0;"
+css_diag_style_2 <- 'style="border: 2px solid red; padding: 10px; word-wrap: break-word;"'
     
 ## To be copied in the UI
 # mod_testing_suite_ui("testing_suite_1")

@@ -22,8 +22,8 @@ mod_initialize_server <- function(id, r){
     ns <- session$ns
     
     r$remDr <- RSelenium::remoteDriver(
-      remoteServerAddr = "selenium", # required for docker compose implementation
-      # remoteServerAddr = "localhost",
+      # remoteServerAddr = "selenium", # required for docker compose implementation
+      remoteServerAddr = "localhost",
       port = 4444L,
       browserName = "chrome"
     )

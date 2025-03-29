@@ -158,7 +158,7 @@ mod_browser_server <- function(id, r){
             base64enc::base64encode() %>% 
             paste0("data:text/html;base64,", .)
           
-          tags$iframe(src = html_64, width = "100%", height = "1080px")
+          tags$iframe(src = html_64, width = "100%", height = "800px")
           
         })
         
@@ -177,7 +177,11 @@ mod_browser_server <- function(id, r){
 viewport_standalone <- function(){
   # No input elements required, and therefore, no namespace necessary. Standalone function which can be embedded within other modules when necessary.
   tagList(
-    tags$iframe(src = "http://localhost:6900/vnc.html?autoconnect=true&password=secret", width = "100%", height = "1080px")
+    tags$iframe(
+      src = "http://localhost:6900/vnc.html?autoconnect=true&password=secret", 
+      width = "100%", 
+      height = "730px"
+    )
   )
 }
     

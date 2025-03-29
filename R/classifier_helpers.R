@@ -301,6 +301,38 @@ selector <- R6::R6Class(
         }
       
       return(js_query)
+    },
+    
+    # For getting the href links from the scraper selection
+    href = function(html_in, rm.na = TRUE){
+      
+      href_out <- html_in %>% 
+        self$scrape() %>% 
+        rvest::html_attr("href")
+      
+      if(rm.na){
+        href_out <- purrr::discard(href_out, is.na)
+      }
+      
+      return(href_out)
+      
+    },
+    
+    text = function(html_in){
+      
+      text_out <- html_in %>% 
+        self$scrape() %>% 
+        rvest::html_text()
+      
+      return(text_out)
+      
+    },
+    
+    click = function(remDr){
+      
+      e <- remDr$findElement(using = "xpath", value = self$xpath())
+      e$clickElement()
+      
     }
 
   ))
