@@ -18,6 +18,9 @@ mod_testing_suite_ui <- function(id) {
     bslib::layout_sidebar(
       sidebar = bslib::sidebar(
         width = 600, 
+        bslib::card(
+          shiny::downloadButton(ns("download_all"), "Download All", icon = shiny::icon("download"))
+        ),
         uiOutput(ns("selector_cards"))
       ),
       uiOutput(ns("testing_viewport"))
@@ -65,18 +68,18 @@ mod_testing_suite_server <- function(id, r){
               ),
               shiny::fluidRow(
                 shiny::div(
-                  style = "padding-right: 33px;",
+                  style = "padding-right: 30px;",
                   bslib::layout_columns(
                     style = "gap: 5px; padding: 0;",
                     shiny::actionButton(
                       ns(paste0("properties_",n)), 
                       "View Properties", 
                       sytle = select_add_style_2),
-                    shiny::actionButton(
+                    shiny::downloadButton(
                       ns(paste0("download_",n)), 
                       label = NULL, 
                       icon = shiny::icon("download"),
-                      sytle = select_add_style_2),
+                      download_attr = list(download = "my_selector.rds")),
                     col_widths = c(10,2)
                   )
                 )
@@ -127,6 +130,28 @@ mod_testing_suite_server <- function(id, r){
           id <- paste0("click_", n)
           observeEvent(input[[id]], {
             input_array$click <- list(id, input[[id]])
+          })
+        })
+        
+        # Download Widgets, by Selector
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("download_", n)
+          n <- stringr::str_remove(id, pattern = "download_")
+          print(n)
+          output[[id]] <- shiny::downloadHandler(
+            filename = function() n,
+            content = function(file){
+              saveRDS(r$selector_list[[n]], paste0(file, ".rds"))
+            },
+            contentType = "application/octet-stream"
+          )
+        })
+        
+        # For initalizing the prpoerties and documentation view
+        lapply(names(r$selector_list), function(n) {
+          id <- paste0("properties_", n)
+          observeEvent(input[[id]], {
+            input_array$properties <- list(id, input[[id]])
           })
         })
         
@@ -256,6 +281,31 @@ mod_testing_suite_server <- function(id, r){
           viewport_standalone()
         })
       })
+      
+      output$download_all <- shiny::downloadHandler(
+        
+        filename = function() "selector_list.zip",
+        
+        content = function(file) {
+          
+          dir <- file.path(tempdir(), "selector_list_files")
+          dir.create(dir)
+          
+          n_list <- names(r$selector_list)
+          paths <- file.path(dir, paste0(n_list, ".rds"))
+          
+          for (i in 1:length(n_list)) {
+            saveRDS(r$selector_list[[n_list[i]]], paths[i])
+          }
+          
+          zip(zipfile = file, files = paths)
+        
+        },
+        
+        contentType = "application/zip"
+        
+      )
+      
         
   })
 }
