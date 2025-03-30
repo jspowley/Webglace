@@ -180,7 +180,7 @@ viewport_standalone <- function(){
     tags$iframe(
       src = "http://localhost:6900/vnc.html?autoconnect=true&password=secret", 
       width = "100%", 
-      height = "730px"
+      height = "900px"
     )
   )
 }

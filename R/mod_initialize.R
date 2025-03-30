@@ -21,9 +21,19 @@ mod_initialize_server <- function(id, r){
     
     ns <- session$ns
     
+    # Check if running in RStudio, setup specific to the testing versus deployment config
+    # In future an in network ocker instance of RStudio server could be useful, 
+    # though may raise security concerns due to embedded secret keys loaded directly to the image.
+    if(shiny::isRunning() && rstudioapi::isAvailable()){
+      network_name <- "localhost"
+    }else{
+      network_name <- "selenium"
+    }
+    
     r$remDr <- RSelenium::remoteDriver(
-      remoteServerAddr = "selenium", # required for docker compose implementation
+      # remoteServerAddr = "selenium", # required for docker compose implementation
       # remoteServerAddr = "localhost",
+      remoteServerAddr = network_name,
       port = 4444L,
       browserName = "chrome"
     )

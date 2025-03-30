@@ -164,11 +164,13 @@ mod_classification_1_server <- function(id, r){
     
     # append var for tag when constructing css selector
     observeEvent(input$tag_add, {
+      try({
       if(input$tag_select != "(No Tag)"){
         css$tag <- input$tag_select
       }else{
         css$tag <- NULL
       }
+      })
     })
     
     observeEvent(input$tag_remove, {
@@ -177,6 +179,7 @@ mod_classification_1_server <- function(id, r){
     
     # append var for class when constructing css selector
     observeEvent(input$class_add, {
+      try({
       if(input$class_select != "(No Class)"){
         if(is.null(css$class)){
           css$class <- paste0(".",input$class_select)
@@ -184,6 +187,7 @@ mod_classification_1_server <- function(id, r){
           css$class <- paste0(css$class, ".",input$class_select)
         }
       }
+      })
     }) 
     
     observeEvent(input$class_remove, {
@@ -194,6 +198,8 @@ mod_classification_1_server <- function(id, r){
     
     # append var for attributes when constructing css selector
     observeEvent(input$attr_add, {
+      
+      try({
       
       if(input$attr_name_select != "(No Attribute)" & input$attr_value_select == "(No Value)"){
         attr_in <- paste0("[",input$attr_name_select,"]")
@@ -208,9 +214,13 @@ mod_classification_1_server <- function(id, r){
       }else{
         css$attr <- paste0(css$attr, attr_in)
       }
+      
+      })
     })
     
     observeEvent(input$attr_remove, {
+      
+      try({
       
       if(input$attr_name_select != "(No Attribute)" & input$attr_value_select == "(No Value)"){
         attr_out <- paste0("\\[",input$attr_name_select,"\\]")
@@ -221,6 +231,8 @@ mod_classification_1_server <- function(id, r){
       }
       
       css$attr <- stringr::str_remove(css$attr, pattern = attr_out)
+      
+      })
       
     })
     
@@ -395,7 +407,13 @@ mod_classification_1_server <- function(id, r){
       
       name_out <- input$classifier_name_out
       
-      if(!is.null(name_out) & length(name_out) > 0){
+      # Testing for user inputs required for a substatnive class.
+      if(!is.null(name_out) & length(name_out) > 0 &
+         (!is.null(m$css_class_identifier$css_within) |
+          !is.null(m$css_class_identifier$css_self) |
+          !is.null(m$css_class_identifier$css_contains)) &
+         !name_out %in% names(r$selector_list)
+        ){
         
         # Clearing buffers, again
         if(!is.null(m$rm_js)){

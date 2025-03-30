@@ -165,7 +165,7 @@ mod_testing_suite_server <- function(id, r){
         selector_name <- stringr::str_remove(input_array$click[1], pattern = "click_")
         selector_in <-  r$selector_list[[selector_name]]
         
-        selector_in$click(r$remDr)
+        try(selector_in$click(r$remDr))
         
       })
       
@@ -316,10 +316,12 @@ mod_testing_suite_server <- function(id, r){
         selector_in <-  r$selector_list[[selector_name]]
         
         output$code1 <- renderText({
-          
+ 
+        paste0(         
 "
 # RSelenium to be previously intiated and assigned to variable remDr
-selector <- readRDS('selector_path.rds')
+selector <- readRDS('",
+selector_name, ".rds')
           
 html <- remDr$getPageSource()
 html <- rvest::read_html(html[[1]])
@@ -347,6 +349,7 @@ selector$text(html)
 # Text matching is optional, but helpful for targetting buttons very in singular fashion.
 selector$click(remDr, text = NULL, exact_text = FALSE)
 "
+)
           
         })
         
