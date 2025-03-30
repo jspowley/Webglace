@@ -136,12 +136,15 @@ mod_testing_suite_server <- function(id, r){
         # Download Widgets, by Selector
         lapply(names(r$selector_list), function(n) {
           id <- paste0("download_", n)
-          n <- stringr::str_remove(id, pattern = "download_")
+          n <- stringr::str_remove(id, pattern = "download_") %>% paste0(".rds")
           print(n)
           output[[id]] <- shiny::downloadHandler(
+            
             filename = function() n,
             content = function(file){
-              saveRDS(r$selector_list[[n]], paste0(file, ".rds"))
+      
+              saveRDS(r$selector_list[[n]], file)
+              
             },
             contentType = "application/octet-stream"
           )
