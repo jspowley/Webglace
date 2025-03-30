@@ -44,6 +44,19 @@ mod_welcome_ui <- function(id) {
           h2("Other Tabs"),
           p("Webglace isn't just abou solving technical boundaries and barriers to entry. It's about improving the pace and quality of life of those engaging in research and market analytics,and those looking to take on more ambitious projects after hours when time is scarce and uick pivots are necessary. It's an internal tool, which assumes the user already has some familiarity with the web scraping process. Because of this, the design is minimalistic. It's a complex product, and as a result, if you really try to break it, there's very likely a way. To really weigh the tools value, nd ensure it's feature set is robust enough for what it was desinged to accomplish, I set out within the last week of deployment for this project to put together 'mini projects' which make use of this tool to structure the information collection. Each project includes a timeline marker indicating development time, a button allowing you to see the webscraping in action, and data collected as proof of concept. This approach should also allow me to stumble into shortcomings, and expand the selector class further.")
     
+        ),
+        
+        # Stollen from ChatGPT since I can't be bothered to design custom footers, and standard boiler plate feels right for this...
+        div(
+          style = "margin-top: 30px; padding: 10px 0; text-align: center; font-size: 12px; color: #888;",
+          HTML(
+            paste0(
+              "Built with <a href='https://shiny.posit.co/' target='_blank' style='color: #888;'>Shiny</a> by ",
+              "<a href='https://www.linkedin.com/in/powleyjustin' target='_blank' style='color: #888;'>Justin Powley</a> · ",
+              "© ", format(Sys.Date(), "%Y"), " · ",
+              "<a href='https://github.com/jspowley' target='_blank' style='color: #888;'>GitHub</a>"
+            )
+          )
         )
       )
     )
