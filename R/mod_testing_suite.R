@@ -298,7 +298,7 @@ mod_testing_suite_server <- function(id, r){
             saveRDS(r$selector_list[[n_list[i]]], paths[i])
           }
           
-          zip(zipfile = file, files = paths)
+          zip(zipfile = file, files = paths, flags = "-j")
         
         },
         
@@ -306,6 +306,71 @@ mod_testing_suite_server <- function(id, r){
         
       )
       
+      # For displaying the structure and implementation documentation of a selector
+      observeEvent(input_array$properties,{
+        
+        selector_name <- stringr::str_remove(input_array$properties[1], pattern = "properties_")
+        selector_in <-  r$selector_list[[selector_name]]
+        
+        output$code1 <- renderText({
+          
+"
+# RSelenium to be previously intiated and assigned to variable remDr
+selector <- readRDS('selector_path.rds')
+          
+html <- remDr$getPageSource()
+html <- rvest::read_html(html[[1]])
+          
+# Scrapes a webpage using the CSS selectors recursively
+selector$scrape(html)
+          
+# Since outputs serve as valid inputs to the scrape function, mutliple selectors can be chained for advanced filtering:
+selector$scrape(html) %>% selector2$scrape()
+          
+# Getting the curent xpath for custom JS / Selenium:
+selector$xpath()
+          
+# When text matching is desired in the xpath, use the following. Exact can be TRUE/FALSE to modify whether a substring or exact match is desired.
+selector$xpath_text('text to match', exact = FALSE)
+
+# Pulling href/urls off the page. This is particular to the current level element, and won't apply to child elements lower down. 
+# na.rm removes NA values for nodes not containing an href attribute.
+selector$href(html, rm.na = TRUE)
+
+# Text pulls any text nested within nodes
+selector$text(html)
+
+# For clicking dynamic elements. For more advanced interaction, xpath is designed to be able to target elements easily within a JS framework, and is recommended.
+# Text matching is optional, but helpful for targetting buttons very in singular fashion.
+selector$click(remDr, text = NULL, exact_text = FALSE)
+"
+          
+        })
+        
+        output$testing_viewport <- renderUI({
+          
+          bslib::layout_columns(
+            
+            bslib::card(
+              bslib::card_header(paste0("Name: ", selector_name)),
+              p(paste0("CSS Parent: ", selector_in$css_within)),
+              p(paste0("CSS Main: ", selector_in$css_self)),
+              p(paste0("CSS Child: ", selector_in$css_contains)),
+              p(paste0("XPath: "), selector_in$xpath())
+            ),
+            
+            bslib::card(
+              bslib::card_header(paste0("Implementation")),
+              verbatimTextOutput(ns("code1"))
+            ),
+            
+            col_widths = c(12,12)
+            
+          )
+          
+        })
+        
+      })
         
   })
 }
