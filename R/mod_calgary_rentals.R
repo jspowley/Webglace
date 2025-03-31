@@ -15,7 +15,7 @@ mod_calgary_rentals_ui <- function(id) {
     bslib::page_sidebar(
       
       sidebar = bslib::sidebar(
-        p("Simple script for pulling rents for 2 bedroom apartments in Calgary relative to a fixed address."),
+        p("Simple script for pulling rents for 2 bedroom apartments in Calgary."),
         actionButton(ns("view_browser"), "View Browser"),
         actionButton(ns("run_script"), "Run Script")
       ),
@@ -41,6 +41,17 @@ mod_calgary_rentals_server <- function(id, r){
     observeEvent(input$run_script, {
 
       r$remDr$navigate("https://www.rentfaster.ca/ab/calgary/")
+      
+      Sys.sleep(2)
+      filter_button$click(r$remDr)
+      Sys.sleep(2)
+      apartment_button$click(r$remDr)
+      Sys.sleep(2)
+      two_bed$click(r$remDr)
+      Sys.sleep(2)
+      laundry_in_suite$click(r$remDr, scroll_time = 1.2)
+      Sys.sleep(2)
+      close_filters$click(r$remDr)
         
     })
     

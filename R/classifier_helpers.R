@@ -80,7 +80,7 @@ selector <- R6::R6Class(
     get_attr = function(css_in){
       
       print("ATTR Prior")
-      attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=\\-\\_]*\\]")
+      attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=\\-\\_\\(\\)\\;]*\\]")
       print("Attr After")
       print(attr_out)
       
@@ -343,7 +343,7 @@ selector <- R6::R6Class(
       
     },
     
-    click = function(remDr, text = NULL, exact_text = FALSE){
+    click = function(remDr, text = NULL, exact_text = FALSE, offset = NULL, scroll_time = NULL){
       
       if(is.null(text)){
         path <- self$xpath()
@@ -351,8 +351,29 @@ selector <- R6::R6Class(
         path <- self$xpath_text(text = text, exact = exact_text)
       }
       
-      e <- remDr$findElement(using = "xpath", value = path)
-      e$clickElement()
+      if(is.null(offset)){
+        
+        e <- remDr$findElement(using = "xpath", value = path)
+        remDr$executeScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", list(e))
+        if(!is.null(scroll_time)){
+          Sys.sleep(scroll_time)
+        }
+        e$clickElement()
+        
+      }else{
+        
+        e <- remDr$findElements(using = "xpath", value = path)
+        
+        if(offset <= length(e)){
+        
+          remDr$executeScript("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", list(e[[offset]]))
+          if(!is.null(scroll_time)){
+            Sys.sleep(scroll_time)
+          }
+          e[[offset]]$clickElement()
+        
+        }
+      }
       
     },
     
