@@ -79,8 +79,10 @@ selector <- R6::R6Class(
     # Function for pulling attributes
     get_attr = function(css_in){
       
-      print("attr out")
-      attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=]*\\]")
+      print("ATTR Prior")
+      attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=\\-\\_]*\\]")
+      print("Attr After")
+      print(attr_out)
       
       print(str(attr_out))
       
@@ -117,6 +119,9 @@ selector <- R6::R6Class(
     xpath_attrs = function(css_in){
       
       attributes <- self$get_attr(css_in)
+      print("ATTRIBUTES BEFORE CONVERSION")
+      print(attributes)
+      
       attr_buffer <- list()
       
       if(!is.null(attributes)){
@@ -148,6 +153,10 @@ selector <- R6::R6Class(
       
       c_a_buffer <- list()
       c_a_buffer <- append(c_a_buffer, self$xpath_classes(self$css_self))
+      
+      print("CSS ATTRS SELF")
+      print(self$xpath_attrs(self$css_self))
+      
       c_a_buffer <- append(c_a_buffer, self$xpath_attrs(self$css_self))
       
       c_a_buffer <- paste0(c_a_buffer, collapse = " and ")
@@ -190,6 +199,12 @@ selector <- R6::R6Class(
         " and descendant\\:\\:\\*\\[\\]| and ancestor\\:\\:\\*\\[\\]| descendant\\:\\:\\*\\[\\]| ancestor\\:\\:\\*\\[\\]")
       xpath_out <- stringr::str_replace(xpath_out, pattern = "\\[ and ", replacement = "\\[")
       xpath_out <- stringr::str_remove_all(xpath_out, pattern = "\\[\\]")
+      
+      print("MAIN IS")
+      print(self$css_self)
+      
+      print("XPATH IS")
+      print(xpath_out)
       
       return(xpath_out)
     },
@@ -237,16 +252,16 @@ selector <- R6::R6Class(
       
       if(!is.null(self$css_self)){
         if(trimws(self$css_self) != ""){
-        js_self <- paste0("let elements = document.querySelectorAll('",self$css_self,"');")
+        js_self <- paste0("let elements = document.querySelectorAll(\"",self$css_self,"\");")
         }else{
-          js_self <- paste0("let elements = document.querySelectorAll('","*","');")
+          js_self <- paste0("let elements = document.querySelectorAll(\"","*","\");")
         }
       }else{
-        js_self <- paste0("let elements = document.querySelectorAll('","*","');")
+        js_self <- paste0("let elements = document.querySelectorAll(\"","*","\");")
       }
       
-      js_contains <- paste0("let contains = el.querySelector('", self$css_contains, "') !== null;")
-      js_within <- paste0("let within = el.closest('", self$css_within,"') !== null;")
+      js_contains <- paste0("let contains = el.querySelector(\"", self$css_contains, "\") !== null;")
+      js_within <- paste0("let within = el.closest(\"", self$css_within,"\") !== null;")
       
       logical <- c()
       js_query <- paste(js_self, "elements.forEach(el => {")

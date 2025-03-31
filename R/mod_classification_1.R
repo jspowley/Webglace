@@ -269,12 +269,14 @@ mod_classification_1_server <- function(id, r){
         m$rm_js <- NULL
       }
         
-      js <- paste0("document.querySelectorAll('",css_selector,"')")
+      js <- paste0("document.querySelectorAll(\"",css_selector,"\")")
       js <- 
         paste0(js,
           ".forEach(el => el.style.border = '2px solid red');"
         )
       try(r$remDr$executeScript(js, args = list(NULL)))
+      print("JS IS:")
+      print(js)
       
       m$last_css <- css_selector
       
@@ -460,7 +462,7 @@ mod_classification_1_server <- function(id, r){
 clear_css_border <- function(r, m, css){
   try(
     if(!is.null(m$last_css)){
-      js <- paste0("document.querySelectorAll('",m$last_css,"')")
+      js <- paste0("document.querySelectorAll(\"",m$last_css,"\")")
       js <- 
         paste0(js,
                ".forEach(el => el.style.border = '');"
