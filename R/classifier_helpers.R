@@ -79,10 +79,10 @@ selector <- R6::R6Class(
     # Function for pulling attributes
     get_attr = function(css_in){
       
-      print("ATTR Prior")
+      # print("ATTR Prior")
       attr_out <- css_in %>% stringr::str_extract_all("\\[[A-Za-z0-9 \\'\\=\\-\\_\\(\\)\\;]*\\]")
-      print("Attr After")
-      print(attr_out)
+      # print("Attr After")
+      # print(attr_out)
       
       print(str(attr_out))
       
@@ -119,8 +119,8 @@ selector <- R6::R6Class(
     xpath_attrs = function(css_in){
       
       attributes <- self$get_attr(css_in)
-      print("ATTRIBUTES BEFORE CONVERSION")
-      print(attributes)
+      # print("ATTRIBUTES BEFORE CONVERSION")
+      # print(attributes)
       
       attr_buffer <- list()
       
@@ -432,7 +432,7 @@ unique_classes <- function(html_in, tag_in = NULL){
 
 attr_names <- function(html_in, tag_in, class_in = NULL){
   
-  print(tag_in)
+  # print(tag_in)
   
   if(tag_in == "(No Tag)"){
     tag_in <- "*"
