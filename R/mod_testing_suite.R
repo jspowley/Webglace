@@ -135,19 +135,23 @@ mod_testing_suite_server <- function(id, r){
         
         # Download Widgets, by Selector
         lapply(names(r$selector_list), function(n) {
+          
           id <- paste0("download_", n)
-          n <- stringr::str_remove(id, pattern = "download_") %>% paste0(".rds")
-          print(n)
+          
           output[[id]] <- shiny::downloadHandler(
             
-            filename = function() n,
-            content = function(file){
-      
-              saveRDS(r$selector_list[[n]], file)
+            filename = function() paste0(n, ".rds"),
+            
+            content = function(file) {
+              
+              selector_in <- r$selector_list[[n]]
+              saveRDS(selector_in, file)
               
             },
+            
             contentType = "application/octet-stream"
-          )
+          
+            )
         })
         
         # For initalizing the prpoerties and documentation view
