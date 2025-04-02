@@ -377,6 +377,13 @@ selector <- R6::R6Class(
       
     },
     
+    scroll = function(remDr, px = 500){
+      
+      e <- remDr$findElement(using = "xpath", value = self$xpath())
+      remDr$executeScript(paste0("arguments[0].scrollBy({top:", px, ", behavior: 'smooth'});"), list(e))
+      
+    },
+    
     xpath_text = function(text, exact = FALSE, xpath_in = NULL){
       
       if(!is.null(xpath_in)){

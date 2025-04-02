@@ -16,7 +16,8 @@ app_ui <- function(request) {
       mod_welcome_ui("welcome_1"),
       mod_browser_ui("browser_1"),
       mod_classification_1_ui("class_1"),
-      mod_testing_suite_ui("testing_1")
+      mod_testing_suite_ui("testing_1"),
+      mod_guitar_ui("guitar")
       
     )
   )
