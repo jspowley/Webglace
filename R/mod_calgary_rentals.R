@@ -56,6 +56,8 @@ mod_calgary_rentals_server <- function(id, r){
       
 # Getting Angular Scope
       
+      # Trouble shooting angular has been nothing but brutal. I'm curious is tools such as pupeteer cover this in more robust fashion.
+      
       # Click apartment type
       e <- r$remDr$findElement("xpath", apartment$xpath())
       r$remDr$executeScript("
