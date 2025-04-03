@@ -44,42 +44,43 @@ mod_calgary_rentals_server <- function(id, r){
     observeEvent(input$run_script, {
       
       r$remDr$navigate("https://www.rentfaster.ca/ab/calgary/")
-      Sys.sleep(2)
-      list_button$click(r$remDr)
-      Sys.ss
+      Sys.sleep(4)
+      
+      e <- list_button$xpath() %>% r$remDr$findElement(using = "xpath", value = .)
+      r$remDr$executeScript("arguments[0].click();", list(e))
+      
+      Sys.sleep(4)
       filter_button$click(r$remDr)
+      Sys.sleep(4)
+      
+      
+# Getting Angular Scope
+      
+      # Click apartment type
+      e <- r$remDr$findElement("xpath", apartment$xpath())
+      r$remDr$executeScript("
+  arguments[0].scrollIntoView({block: 'center'});
+  arguments[0].click();
+", list(e))
       Sys.sleep(2)
       
-      tryCatch({
-        
-        Sys.sleep(0.2)
-        apartment$click(r$remDr, scroll_time = 1)
-        Sys.sleep(2)
-        two_bed$click(r$remDr, scroll_time = 1)
-        Sys.sleep(2)
-        laundry$click(r$remDr, scroll_time = 1)
-        Sys.sleep(2)
-        search_button$click(r$remDr, scroll_time = 1)
-        
-      },
-      
-      error = function(e){
-        try({
-          
-          Sys.sleep(0.2)
-          apartment2$click(r$remDr, scroll_time = 1)
-          Sys.sleep(2)
-          two_bed2$click(r$remDr, scroll_time = 1)
-          Sys.sleep(2)
-          laundry2$click(r$remDr, scroll_time = 1)
-          Sys.sleep(2)
-          search_button$click(r$remDr, scroll_time = 1)
-          
-        })
-      })
-      
+      # Click 2 bedroom
+      e <- r$remDr$findElement("xpath", two_bed$xpath())
+      r$remDr$executeScript("
+  arguments[0].scrollIntoView({block: 'center'});
+  arguments[0].click();
+", list(e))
       Sys.sleep(2)
-      # card_scroll$scroll(r$remDr, 1000)
+      
+      # Click in-suite laundry
+      e <- r$remDr$findElement("xpath", laundry$xpath())
+      r$remDr$executeScript("
+  arguments[0].scrollIntoView({block: 'center'});
+  arguments[0].click();
+", list(e))
+      Sys.sleep(2)
+      
+      
       
     })
     

@@ -343,7 +343,7 @@ selector <- R6::R6Class(
       
     },
     
-    click = function(remDr, text = NULL, exact_text = FALSE, offset = NULL, scroll_time = NULL){
+    click = function(remDr, text = NULL, exact_text = FALSE, offset = NULL, scroll_time = NULL, strict = TRUE){
       
       if(is.null(text)){
         path <- self$xpath()
@@ -358,7 +358,11 @@ selector <- R6::R6Class(
         if(!is.null(scroll_time)){
           Sys.sleep(scroll_time)
         }
-        e$clickElement()
+        if(strict){
+          e$clickElement()
+        }else{
+          remDr$executeScript("arguments[0].click();", list(e))
+        }
         
       }else{
         
@@ -370,7 +374,12 @@ selector <- R6::R6Class(
           if(!is.null(scroll_time)){
             Sys.sleep(scroll_time)
           }
-          e[[offset]]$clickElement()
+          
+          if(strict){
+            e[[offset]]$clickElement()
+          }else{
+            remDr$executeScript("arguments[0].click();", list(e[[offset]]))
+          }
         
         }
       }
