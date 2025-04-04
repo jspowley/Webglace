@@ -51,3 +51,7 @@ mod_guitar_server <- function(id, r){
     
 ## To be copied in the server
 # mod_guitar_server("guitar_1")
+
+# Note that ultimate guitar uses divs and random class names for everything, allowing them to shuffle there entire website class 
+# structure rapidly. This requires more specific x-path treeing to lead to consistent results.
+

@@ -90,10 +90,7 @@ mod_calgary_rentals_server <- function(id, r){
   
 }
 
-smooth_scroll <- function(remDr, px){
-  js <- paste0("window.scrollBy({top: 1000, behavior: 'smooth'});")
-  remDr$executeScript(js)
-}
+
     
 ## To be copied in the UI
 # mod_calgary_rentals_ui("calgary_rentals_1")

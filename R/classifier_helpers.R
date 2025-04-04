@@ -495,4 +495,13 @@ attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
     return()
 }
 
-temp <- selector$new("tag1.class1[attr1 = 'value1']", "tag2.class2[attr2 = 'value2']", "tag3.class3[attr3 = 'value3']")
+smooth_scroll <- function(remDr, px){
+  js <- paste0("window.scrollBy({top: ", px,", behavior: 'smooth'});")
+  remDr$executeScript(js)
+}
+
+get_page <- function(remDr){
+  page <- remDr$getPageSource()
+  page <- rvest::read_html(page[[1]])
+  return(page)
+}
