@@ -16,11 +16,15 @@ mod_demo1_ui <- function(id) {
     bslib::page_sidebar(
       
       sidebar = bslib::sidebar(
-        p("A simple Reddit scraper. We can get anchor URL for follow up scraping and headlines. Other info such as upvotes and comment counts are hidden by a Shadow DOM requiring a more advanced kit."),
-        actionButton(ns("view_browser"), "View Browser"),
-        actionButton(ns("run_script"), "Run Script"),
-        actionButton(ns("output_table"), "View Output Table"),
-        actionButton(ns("output_cloud"), "View Output Word Cloud")
+        p("A simple Reddit scraper. We can use the scraped URL as a foreign to key link with more detailed information specific to each post. Other info such as upvotes and comment counts are hidden by a Shadow DOM requiring a more advanced kit."),
+        shiny::actionButton(ns("view_browser"), "View Browser"),
+        shiny::numericInput(ns("iterations"), "Iterations (5-8 seconds per):", value = 5),
+        shiny::checkboxInput(ns("enable_custom"), "Use Custom URL"),
+        shiny::uiOutput(ns("custom_url_ui")),
+        shiny::actionButton(ns("run_script"), "Run Script"),
+        shiny::actionButton(ns("output_table"), "View Output Table"),
+        shiny::downloadButton(ns("reddit_scrape"), "Download"),
+        width = 400
       ),
       
       uiOutput(ns("display"))
@@ -45,12 +49,17 @@ mod_demo1_server <- function(id, r){
     
     observeEvent(input$run_script, {
       
-      r$remDr$navigate("https://www.reddit.com/r/worldnews/")
+      if(input$enable_custom){
+        try(r$remDr$navigate(input$custom_url))
+      }else{
+        r$remDr$navigate("https://www.reddit.com/r/worldnews/new/")
+      }
+      
       Sys.sleep(2)
       
       output_df <- NULL
       
-      for(i in 1:1){
+      for(i in 1:input$iterations){
       
         print(i)
         
@@ -66,13 +75,18 @@ mod_demo1_server <- function(id, r){
       
         title_vec <- post_list %>% post_title$text()
         url_vec <- post_list %>% post_title$href()
+        time_vec <- post_list %>% post_time$scrape() %>% rvest::html_attr("datetime")
       
+        print(str(title_vec))
+        print(str(url_vec))
+        print(str(time_vec))
+        
         if(is.null(output_df)){
-          output_df <- data.frame(title = title_vec, url = url_vec)
+          output_df <- data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
         }else{
           output_df <- dplyr::bind_rows(
             output_df,
-            data.frame(title = title_vec, url = url_vec)
+            data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
           ) %>% 
             dplyr::distinct()
         }
@@ -89,6 +103,47 @@ mod_demo1_server <- function(id, r){
       # It is also possible using execute script, however this falls outside of our current in scope toolkit, and will be pushed into future versioning.
         
     })
+    
+    observeEvent(input$enable_custom, {
+      
+      if(input$enable_custom){
+        
+        output$custom_url_ui <- renderUI({
+          textInput(ns("custom_url"), "Custom Subreddit URL:", value = "https://www.reddit.com/r/worldnews/new/")
+        })
+        
+      }else{
+        
+        output$custom_url_ui <- renderUI({
+          p("")
+        })
+        
+      }
+      
+    })
+    
+    
+    observeEvent(input$output_table, {
+      
+      output$table_out <- DT::renderDT(s$output_df)
+      
+      output$display <- renderUI({
+        DT::DTOutput(ns("table_out"))
+      })
+      
+    })
+    
+    output$reddit_scrape <- shiny::downloadHandler(
+      
+      filename = "reddit.rds",
+      
+      content = function(file){
+        saveRDS(s$output_df, file)
+      },
+      
+      contentType = "application/octet-stream"
+      
+    )
     
   })
 }
