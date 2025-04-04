@@ -13,6 +13,7 @@ app_server <- function(input, output, session) {
   mod_classification_1_server("class_1", r)
   mod_testing_suite_server("testing_1", r)
   mod_demo1_server("demo1", r)
+  mod_lessons_server("lessons")
   
   # bslib::bs_themer()
   

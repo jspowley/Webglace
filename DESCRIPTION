@@ -16,6 +16,7 @@ Imports:
     magrittr,
     OpenImageR,
     purrr,
+    quarto,
     R6,
     RSelenium,
     rvest,

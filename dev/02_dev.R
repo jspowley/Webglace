@@ -28,6 +28,7 @@ golem::add_module(name = "testing_suite", with_test = TRUE)
 # golem::add_module(name = "calgary_rentals", with_test = TRUE)
 # golem::add_module(name = "guitar", with_test = TRUE)
 golem::add_module(name = "demo1", with_test = TRUE)
+golem::add_module(name = "lessons", with_test = TRUE)
 
 # Name of the module
 # golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module

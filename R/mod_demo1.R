@@ -11,7 +11,7 @@ mod_demo1_ui <- function(id) {
   ns <- NS(id)
   
   bslib::nav_panel(
-    title = "Demo 1",
+    title = "Demo",
     
     bslib::page_sidebar(
       
