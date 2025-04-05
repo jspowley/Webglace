@@ -56,11 +56,11 @@ mod_demo1_server <- function(id, r){
     
     # Slight break in molecularity, there's something strange about data patching on packages inside of Docker deployments
     # Found this by sshing into the container, for a later conversation with you, Phil
-    try({post <- load("/usr/local/lib/R/site-library/scrapedemo/data/post.rda")})
+    try({post <- load("/opt/my_dependencies/scrapedemo/data/post.rda")})
     print("POST")
     try({print(str(post))})
-    try({post_title <- load("/usr/local/lib/R/site-library/scrapedemo/data/post_title.rda")})
-    try({post_time <- load("/usr/local/lib/R/site-library/scrapedemo/data/post_time.rda")})
+    try({post_title <- load("/opt/my_dependencies/scrapedemo/data/post_title.rda")})
+    try({post_time <- load("/opt/my_dependencies/scrapedemo/data/post_time.rda")})
     
     print("POST EXISTS")
     print(str(post))
