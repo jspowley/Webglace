@@ -14,6 +14,6 @@ Website
 post_title
 }
 \description{
-Selects a posts title
+Selects a post
 }
 \keyword{datasets}

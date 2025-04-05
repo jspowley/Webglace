@@ -14,6 +14,6 @@ Website
 post_time
 }
 \description{
-Selects a posts posting date
+Selects a post
 }
 \keyword{datasets}
