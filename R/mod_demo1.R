@@ -54,6 +54,9 @@ mod_demo1_server <- function(id, r){
       output$display <- renderUI(viewport_standalone())  
     })
     
+    print("POST EXISTS")
+    print(str(post))
+    
     observeEvent(input$run_script, {
       
       if(input$enable_custom){
