@@ -154,10 +154,6 @@ mod_demo1_server <- function(id, r){
     
   })
 }
-
-data(post, package = "Webglace", envir = environment())
-data(post_title, package = "Webglace", envir = environment())
-data(post_time, package = "Webglace", envir = environment())
     
 ## To be copied in the UI
 # mod_demo1_ui("demo1_1")
