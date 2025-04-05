@@ -16,7 +16,7 @@ devtools::install_github("jspowley/Webglace")
 
 ## Run
 
-Webglace is run in orchestration a noVNC instance and Selenium instance. To run with the supporting applications, navigate to the ini folder and run:
+Webglace is run in orchestration a noVNC instance and Selenium instance. To run with the supporting applications, navigate to the init folder and run:
 
 ``` bash
 docker-compose -p webglace up -d
