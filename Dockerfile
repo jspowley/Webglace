@@ -28,4 +28,5 @@ EXPOSE 3838
 
 #CMD ["/init"]
 # CMD ["R", "-e", "Webglace::run_app(options = list(appDir = '/srv/shiny-server/webglace/', host = '0.0.0.0', port = 3838))"]
+RUN R -e "library(Webglace); print(ls('package:Webglace'))"
 CMD ["R", "-e", "Webglace::run_app(host = '0.0.0.0', port = 3838)"]
