@@ -99,8 +99,8 @@ mod_browser_server <- function(id, r){
       page_out <- rvest::read_html(page_out[[1]])
       r$page_html <- page_out
       
-      print(r$page_html)
-      saveRDS(as.character(page_out), "test_page.rds")
+      # print(r$page_html)
+      # saveRDS(as.character(page_out), "test_page.rds")
       
     })
     
