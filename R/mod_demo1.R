@@ -69,11 +69,11 @@ mod_demo1_server <- function(id, r){
       
       try(post_in <- post)
       try(post_in_title <- post_title)
-      try(post_in_time <- post_time[]
+      try(post_in_time <- post_time)
       
-      try(post_in <- readRDS("/opt/my_dependencies/scrapedemo/data/post.rds"))
-      try(post_in_title <- readRDS("/opt/my_dependencies/scrapedemo/data/post_title.rds"))
-      try(post_in_ <- readRDS("/opt/my_dependencies/scrapedemo/data/post_time.rds"))
+      try(post_in <- load(app_sys("data/post.rda")))
+      try(post_in_title <- load(app_sys("data/post_title.rda")))
+      try(post_in_time <- load(app_sys("data/post_time.rda")))
       
       if(input$enable_custom){
         try(r$remDr$navigate(input$custom_url))
