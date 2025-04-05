@@ -23,7 +23,6 @@ Imports:
     shiny,
     shinypanel,
     stringr,
-    Webglace,
     xml2
 Encoding: UTF-8
 LazyData: true

@@ -54,7 +54,9 @@ mod_demo1_server <- function(id, r){
       output$display <- renderUI(viewport_standalone())  
     })
     
-    post <- Webglace::post
+    post <- scraper_demo::post
+    post_title <- scraper_demo::post_title
+    post_time <- scraper_demo::post_time
     print("POST EXISTS")
     print(str(post))
     
