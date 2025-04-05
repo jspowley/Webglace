@@ -62,12 +62,17 @@ mod_demo1_server <- function(id, r){
     
     print("POST EXISTS")
     print(getwd())
+    print(list.files(getwd()))
     
     observeEvent(input$run_script, {
       
-      post_in <- load("/opt/my_dependencies/scrapedemo/data/post.rda")
-      post_in_title <- load("/opt/my_dependencies/scrapedemo/data/post_title.rda")
-      post_in_ <- load("/opt/my_dependencies/scrapedemo/data/post_time.rda")
+      post_in <- post
+      post_in_title <- post_title
+      post_in_time <- post_time
+      
+      try(post_in <- load("/opt/my_dependencies/scrapedemo/data/post.rda"))
+      try(post_in_title <- load("/opt/my_dependencies/scrapedemo/data/post_title.rda"))
+      try(post_in_ <- load("/opt/my_dependencies/scrapedemo/data/post_time.rda"))
       
       if(input$enable_custom){
         try(r$remDr$navigate(input$custom_url))
