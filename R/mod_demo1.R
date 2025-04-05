@@ -48,9 +48,9 @@ mod_demo1_server <- function(id, r){
     
     s <- reactiveValues()
     
-    utils::data(golem::get_golem_data_path("post"))
-    utils::data(golem::get_golem_data_path("post_time"))
-    utils::data(golem::get_golem_data_path("post_title"))
+    utils::data(golem::get_golem_data_path("data/post"))
+    utils::data(golem::get_golem_data_path("data/post_time"))
+    utils::data(golem::get_golem_data_path("data/post_title"))
  
     output$display <- renderUI(viewport_standalone())
     
