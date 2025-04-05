@@ -54,9 +54,13 @@ mod_demo1_server <- function(id, r){
       output$display <- renderUI(viewport_standalone())  
     })
     
-    post <- scrapedemo::post
-    post_title <- scrapedemo::post_title
-    post_time <- scrapedemo::post_time
+    # Slight break in molecularity, there's something strange about data patching on packages inside of Docker deployments
+    # Found this by sshing into the container, for a later conversation with you, Phil
+    try({post <- load("/usr/local/lib/R/site-library/scrapedemo/data/post.rda")})
+    print("POST")
+    try({print(str(post))})
+    try({post_title <- load("/usr/local/lib/R/site-library/scrapedemo/data/post_title.rda")})
+    try({post_time <- load("/usr/local/lib/R/site-library/scrapedemo/data/post_time.rda")})
     
     print("POST EXISTS")
     print(str(post))
