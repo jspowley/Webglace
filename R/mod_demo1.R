@@ -66,9 +66,9 @@ mod_demo1_server <- function(id, r){
     
     observeEvent(input$run_script, {
       
-      post_in <- post
-      post_in_title <- post_title
-      post_in_time <- post_time
+      try(post_in <- post)
+      try(post_in_title <- post_title)
+      try(post_in_time <- post_time)
       
       try(post_in <- readRDS("/opt/my_dependencies/scrapedemo/data/post.rds"))
       try(post_in_title <- readRDS("/opt/my_dependencies/scrapedemo/data/post_title.rds"))
