@@ -61,7 +61,7 @@ mod_demo1_server <- function(id, r){
     print(file.exists("/opt/my_dependencies/scrapedemo/data/post_time.rda"))
     
     print("POST EXISTS")
-    # print(str(post))
+    print(getwd())
     
     observeEvent(input$run_script, {
       
