@@ -27,4 +27,5 @@ RUN R -e "devtools::install_github('jspowley/Webglace', dependencies = TRUE)"
 EXPOSE 3838
 
 #CMD ["/init"]
-CMD ["R", "-e", "Webglace::run_app(options = list(appDir = '/srv/shiny-server/webglace/', host = '0.0.0.0', port = 3838))"]
+# CMD ["R", "-e", "Webglace::run_app(options = list(appDir = '/srv/shiny-server/webglace/', host = '0.0.0.0', port = 3838))"]
+CMD ["R", "-e", "Webglace::run_app(host = '0.0.0.0', port = 3838)"]
