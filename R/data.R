@@ -4,6 +4,7 @@
 #'
 #' @format An R6 class
 #' @source Website
+#' @export
 "post"
 
 #' post_title
@@ -12,6 +13,7 @@
 #'
 #' @format An R6 class
 #' @source Website
+#' @export
 "post_title"
 
 #' post_time
@@ -20,5 +22,6 @@
 #'
 #' @format An R6 class
 #' @source Website
+#' @export
 "post_time"
 
