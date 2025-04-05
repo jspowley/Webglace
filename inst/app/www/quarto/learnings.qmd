@@ -1,0 +1,29 @@
+---
+title: "Learnings"
+format: 
+  html:
+    self-contained: TRUE
+---
+
+## Preamble
+
+This project has come with quite a learning curve compared to previous executions. From Docker orchestration, debugging web browser drivers, OS Viewport setup, and grappling with the complexity of web scraping itself, there's many things this project has accomplished well, and many inadequacies and points of improvement to be considered in the future. I've included this section as demonstration of my thought process, to formally address where I see the strengths and limitations, justify some of my choices, and provide direction as to where I might see this project moving towards in the future.
+
+## Strengths
+
+Webglace does an excellent job networking a handful of tools for interactive web scraping together, and deploying them in a modular fashion. A high visibility scraping and parsing engine allows fluid and interchangeable use of css selectors and xpath, covering more intuitive static manipulation and more specific JS targeting when dynamic scraping is ill suited. The underlying selector classes provide a range of functionality including the ability to seamlessly transition into custom JS functions when needed, which prevents the tool from bottle necking itself into a specific feature set. Finally, the tool is bootstrappable, in the sense that live feedback from using the tool gives a good sense of why the tool has shortcomings with certain websites. Although for all sites it might not work flawlessly, the tool provides a better intuition as to why a more robust framework may be necessary, by providing real time user feedback to the user.
+
+## Weaknesses
+
+Some websites can be picky. Incredibly picky. AngularJS for example will have it's API requests fail internally for the page if event triggers happen without the right data structure being passed through, or if events are not explicitly triggered in the proper order or by the right "kind" of user input. This is where Selenium truly falters. A framework which works well with angular would be able to observe the input environment, and potentially even sit as a proxy between the web browser to observe all the in and out traffic occurring under the surface. Another issue is shadow DOMs which stay obscured in Selenium, but are likely more accessible with a JS framework. 
+
+A broader theme of our execution is that since we envision Webglace to provide a generalized framework capable of handing all kinds of website instances, and we are using Selenium which broadly speaking is not generalized to handle all websites in full capacity, we are inherently cut off from our goal. That being said, understanding Seleniums weakneeses lets us approach solution design in a more targeted way in the future.
+
+## UI Choices
+
+A minimal, familiar, near shiny GUI is intentional. Is it flashy? No. It looks like a standard ERP form tool. Is it sellable to a non technical user? I don't believe so. But the target user is not someone who has no web scraping experience whatsoever. It is designed for someone with enough web scraping experience to appreciate the problem it is trying to solve. It's also an incredibly niche tool that is better marketted by accelerated contract intelligence work, or open source as a networking talking point. The GUI being kept near and familiar to Shiny's standard API benefits the targeted end user, since it is clean and less prone to distraction in contrast to the web pages UI elements. Since the web page is the UI the user is actively thinking about, keeping the prototype within the realm of a color scheme familiar to any shiny developer proves useful. Given that the selectors created are intended for R, I believe this decision falls right in pocket with my target audience.
+
+## Key Takeaways and Next Steps
+
+My original goal was to provide a set of tools that can turn any web scraping project idea into something accomplishing within a significantly faster time frame. By integrating live feedback in the same place where selectors are created, application switching and mental overwhelm is limited. The goal was to provide a visual low code tool which doesn't bottleneck the user the same way no code tools typically do. I believe this tool certainly has its place in augmenting a web scraping workflow in a constructive way. Going forward, this will serve as an initial minimal viable product, with future implementations addressing limitations by building bottom up in a framework such as Playwright or Puppeteer. Next steps would focus nearly exclusively on re implementation of the tool with one of these other frameworks in place, and bringing these tools up to a similar functional level. Additional feature expansion would also likely include monitors for inbound and outbound traffic, which make structuring the requests made to more picky servers (AngularJS, ReactJS) easier to structure more consistently. My goal going forward is to try address difficulties so that execution can occur for any new web scraping idea can be done in hours, and not days. I'm looking forward to taking the next steps needed to make this happen.
+

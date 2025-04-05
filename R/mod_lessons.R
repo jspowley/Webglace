@@ -23,15 +23,17 @@ mod_lessons_server <- function(id){
     
     ns <- session$ns
     
-    quarto::quarto_render(
-      input = "www/learnings.qmd"
-    )
+    try({
+      quarto::quarto_render(
+        input = "inst/app/www/quarto/learnings.qmd"
+      )
+    })
     
     output$learnings <- renderUI({
       tags$iframe(
-        src = "learnings.html",
+        src = "www/quarto/learnings.html",
         width = "100%",
-        height = "600px"
+        height = "900px"
       )
     })
  

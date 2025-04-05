@@ -16,7 +16,7 @@ mod_demo1_ui <- function(id) {
     bslib::page_sidebar(
       
       sidebar = bslib::sidebar(
-        p("A simple Reddit scraper. We can use the scraped URL as a foreign to key link with more detailed information specific to each post. Other info such as upvotes and comment counts are hidden by a Shadow DOM requiring a more advanced kit."),
+    
         shiny::actionButton(ns("view_browser"), "View Browser"),
         shiny::numericInput(ns("iterations"), "Iterations (5-8 seconds per):", value = 5),
         shiny::checkboxInput(ns("enable_custom"), "Use Custom URL"),
@@ -24,6 +24,13 @@ mod_demo1_ui <- function(id) {
         shiny::actionButton(ns("run_script"), "Run Script"),
         shiny::actionButton(ns("output_table"), "View Output Table"),
         shiny::downloadButton(ns("reddit_scrape"), "Download"),
+        bslib::card(
+          bslib::card_header("Description:"),
+          p("A simple Reddit scraper."),
+          p("We can use the scraped URL as a foreign to key link with more detailed information specific to each post. Other info such as upvotes and comment counts are hidden by a Shadow DOM requiring a more advanced kit."),
+          p("To see it in action, click 'Run Script'. You can see data collection happen in browser."),
+          p("When data collection is complete, you will see scrolling stop. You can click 'View Output Table' to view the scraped results.")
+        ),
         width = 400
       ),
       
