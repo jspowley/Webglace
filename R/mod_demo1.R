@@ -63,12 +63,13 @@ mod_demo1_server <- function(id, r){
     print("POST EXISTS")
     print(getwd())
     print(list.files(getwd()))
+    print(Sys.info()[["user"]])
     
     observeEvent(input$run_script, {
       
       try(post_in <- post)
       try(post_in_title <- post_title)
-      try(post_in_time <- post_time)
+      try(post_in_time <- post_time[]
       
       try(post_in <- readRDS("/opt/my_dependencies/scrapedemo/data/post.rds"))
       try(post_in_title <- readRDS("/opt/my_dependencies/scrapedemo/data/post_title.rds"))
