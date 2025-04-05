@@ -3,14 +3,17 @@
 \docType{data}
 \name{post_title}
 \alias{post_title}
-\title{dataset: title selector}
+\title{post_title}
 \format{
-An object of class \code{selector} (inherits from \code{R6}) of length 19.
+An R6 class
+}
+\source{
+Website
 }
 \usage{
 post_title
 }
 \description{
-dataset: title selector
+Selects a posts title
 }
 \keyword{datasets}

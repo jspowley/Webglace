@@ -3,14 +3,17 @@
 \docType{data}
 \name{post_time}
 \alias{post_time}
-\title{dataset: date selector}
+\title{post_time}
 \format{
-An object of class \code{selector} (inherits from \code{R6}) of length 19.
+An R6 class
+}
+\source{
+Website
 }
 \usage{
 post_time
 }
 \description{
-dataset: date selector
+Selects a posts posting date
 }
 \keyword{datasets}
