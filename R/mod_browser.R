@@ -164,6 +164,7 @@ mod_browser_server <- function(id, r){
         
       }
       
+      # Resetting the preview iframe when nothing to show.
       if(input$preview_mode == "No Preview"){
         output$html_raw <- shiny::renderText({""})
         output$html_preview <- shiny::renderUI({""})

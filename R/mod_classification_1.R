@@ -218,6 +218,7 @@ mod_classification_1_server <- function(id, r){
       })
     })
     
+    # Removing from the main selector textbox, this is a little finicky given if you change the form inputs it won't remove in the way you want to.
     observeEvent(input$attr_remove, {
       
       try({
@@ -296,6 +297,7 @@ mod_classification_1_server <- function(id, r){
     
     css_class <- shiny::reactiveValues()
     
+    # Assigning CSS to the parent portion of the selector
     shiny::observeEvent(input$to_parent,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$parent <- input$css_select
@@ -306,6 +308,7 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
+    # Assigning CSS to the main portion of the selector
     shiny::observeEvent(input$to_main,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$main <- input$css_select
@@ -316,6 +319,7 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
+    # Assigning CSS to the child portion of the selector
     shiny::observeEvent(input$to_child,{
       if(!is.null(input$css_select) & length(input$css_select) > 0){
         css_class$child <- input$css_select
@@ -326,6 +330,7 @@ mod_classification_1_server <- function(id, r){
       }
     })
     
+    # Displaying the css selector structure
     shiny::observeEvent(list(css_class$parent, css_class$main, css_class$child) ,{
       
       # Updating the diagram
@@ -443,6 +448,7 @@ mod_classification_1_server <- function(id, r){
       
     })
     
+    # Clearing out the selector, for starting over.
     shiny::observeEvent(input$clear_selector, {
       if(!is.null(m$rm_js)){
         try(r$remDr$executeScript(m$rm_js, args = list(NULL)))
@@ -458,6 +464,10 @@ mod_classification_1_server <- function(id, r){
     #})
   })
 }
+
+# Red borders in browser are generated in one of two ways: 
+# Direct CSS or using xpath based JS from the structured selector.
+# Simplifies cleanup and trasnitions.
 
 clear_css_border <- function(r, m, css){
   try(
@@ -477,18 +487,21 @@ clear_css_border <- function(r, m, css){
   css$attr <- NULL
 }
 
+# Clear the buffer on a reset
 clear_css_buffer <- function(css){
   css$tag <- NULL
   css$class <- NULL
   css$attr <- NULL
 }
 
+# Clears the selector on a reset
 clear_selector_buffer <- function(css_class){
   css_class$parent <- NULL
   css_class$main <- NULL
   css_class$child <- NULL
 }
 
+# Styling to get the form actually half decent
 select_add_style <- "height: 37px; padding: 3px 10px; line-height: 1; margin-top: 16px;"
 select_div_style <- "display: flex; align-items: center; gap: 5px; padding: 0;"
 css_diag_style <- 'style="border: 2px solid red; padding: 10px; word-wrap: break-word;"'
