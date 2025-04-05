@@ -47,10 +47,6 @@ mod_demo1_server <- function(id, r){
     ns <- session$ns
     
     s <- reactiveValues()
-    
-    try({utils::data(post, package = "Webglace")})
-    try({utils::data(post_title, package = "Webglace")})
-    try({utils::data(post_time, package = "Webglace")})
  
     output$display <- renderUI(viewport_standalone())
     
@@ -158,6 +154,10 @@ mod_demo1_server <- function(id, r){
     
   })
 }
+
+data(post, package = "Webglace", envir = environment())
+data(post_title, package = "Webglace", envir = environment())
+data(post_time, package = "Webglace", envir = environment())
     
 ## To be copied in the UI
 # mod_demo1_ui("demo1_1")
