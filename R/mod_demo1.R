@@ -54,6 +54,7 @@ mod_demo1_server <- function(id, r){
       output$display <- renderUI(viewport_standalone())  
     })
     
+    post <- Webglace::post
     print("POST EXISTS")
     print(str(post))
     
