@@ -1,3 +1,9 @@
+#' Webglace::selector
+#'
+#' An R6 class allowing static and dynamic webpage scraping and interaction.
+#' Allows for selection of elements using hierarchal CSS selectors or XPath for JS injection.
+#'
+#' @export
 selector <- R6::R6Class(
   
   classname = "selector",
@@ -9,6 +15,14 @@ selector <- R6::R6Class(
     css_contains = NULL,
     #text_self = NULL,
     
+#' @param css_self CSS selector targeting the main element.
+#' @param css_within CSS selector indentifying parent containers
+#' @param css_contains CSS selector identifying the presence of child elements
+#'
+#' @return A webglace::selector class object
+#' @export
+#'
+#' @examples Webglace::selector$new(css_self = "*", css_within = "div.class1", css_contains = "img.class2")
     initialize = function(
       css_self = NULL, 
       css_within = NULL, 
@@ -23,7 +37,12 @@ selector <- R6::R6Class(
       
     },
     
-    # Function for pulling css tags
+#' @param css_in CSS selector string.
+#'
+#' @return The front tag portion of a css selector
+#' @export
+#'
+#' @examples selector$get_tag(css_in = "*")
     get_tag = function(css_in){
       
       tag <- css_in %>% 
@@ -44,7 +63,12 @@ selector <- R6::R6Class(
       return(tag)
     },
     
-    # Function for pulling classes
+#' @param css_in CSS selector string.
+#'
+#' @return A list of css selector classes
+#' @export
+#'
+#' @examples selector$get_classes(css_in = "*")
     get_classes = function(css_in){
       
       classes <- 
@@ -75,8 +99,13 @@ selector <- R6::R6Class(
       
       return(classes)
     },
-    
-    # Function for pulling attributes
+
+#' @param css_in CSS selector string.
+#'
+#' @return A list of css selector attributes
+#' @export 
+#'
+#' @examples selector$get_attr(css_in = "*")
     get_attr = function(css_in){
       
       # print("ATTR Prior")
@@ -99,7 +128,12 @@ selector <- R6::R6Class(
       return(attr_out)
     },
     
-    # Gets an xpath ready list for classes
+#' @param css_in CSS selector string.
+#'
+#' @return Class list ready for xpath parsing
+#' @export
+#'
+#' @examples selector$xpath_classes(css_in = "*")
     xpath_classes = function(css_in){
       
       classes <- self$get_classes(css_in)
@@ -115,7 +149,12 @@ selector <- R6::R6Class(
       return(class_buffer)
     },
     
-    # Gets an xpath ready list for attributes
+#' @param css_in CSS selector string.
+#'
+#' @return Attribute list ready for xpath parsing
+#' @export
+#'
+#' @examples selector$xpath_attrs(css_in = "*")
     xpath_attrs = function(css_in){
       
       attributes <- self$get_attr(css_in)
@@ -135,7 +174,11 @@ selector <- R6::R6Class(
       return(attr_buffer)
       
     },
-    
+
+#' @return A formatted xpath with ancestor and descendants included. Tags classes and attributes handled. May dislike special characters.
+#' @export
+#'
+#' @examples selector$xpath()
     xpath = function(){
       
       xpath_out <- "//"
@@ -209,6 +252,12 @@ selector <- R6::R6Class(
       return(xpath_out)
     },
     
+#' @param html_in An HTML node tree via rvest or XML.
+#'
+#' @return A filtered HTML node tree
+#' @export
+#'
+#' @examples selector$scrape(html_in = page[[1]])
     scrape = function(html_in){
       
       # Filter for 'contained within' css class
@@ -245,6 +294,12 @@ selector <- R6::R6Class(
       return(nodes)
     },
     
+#' @param border A TRUE/FALSE specifying whether to add or remove the red border highlight on a webpage.
+#'
+#' @return A JS script string
+#' @export
+#'
+#' @examples selector$js(border = TRUE)
     js = function(border = TRUE){
       
       # Methods for flagging whether various css selectors match to adjacent/nested elements
@@ -318,7 +373,13 @@ selector <- R6::R6Class(
       return(js_query)
     },
     
-    # For getting the href links from the scraper selection
+#' @param html_in An rvest html node tree.
+#' @param rm.na A TRUE/FALSE for removing NA href values.
+#' 
+#' @return An href list, useful for URL based recursion.
+#' @export
+#'
+#' @examples selector$href(html_in = page[[1]], na.rm = TRUE)
     href = function(html_in, rm.na = TRUE){
       
       href_out <- html_in %>% 
@@ -333,6 +394,12 @@ selector <- R6::R6Class(
       
     },
     
+#' @param html_in An revest style html node tree
+#' 
+#' @return A list of text strings matched to nodes within the html using selectors.
+#' @export
+#'
+#' @examples selector$text(html_in = page[[1]])
     text = function(html_in){
       
       text_out <- html_in %>% 
@@ -342,7 +409,25 @@ selector <- R6::R6Class(
       return(text_out)
       
     },
-    
+
+#' @param remDr A selenium webdriver address
+#' @param text A string, which if included is required to be present on the element to be clicked.
+#' @param exact_text A logical, specifying whether substring or exact matching is to be used.
+#' @param offset An integer allowing you to click on the second, third matching element etc.
+#' @param scroll_time An integer, in seconds, specifying how long to spend scroling to the next element before continuing. Allows for offpage elements to be made visible before interaction.
+#' @param strict A logical, specifying whether to use strict visibility constraints on user inputs.
+#' 
+#' @return NULL
+#' @export
+#'
+#' @examples selector$click(
+#'   remDr = remDr, 
+#'   text = "my_button_text", 
+#'   exact_text = TRUE, 
+#'   offset = 2, 
+#'   scroll_time = 3, 
+#'   strict = FALSE
+#' )
     click = function(remDr, text = NULL, exact_text = FALSE, offset = NULL, scroll_time = NULL, strict = TRUE){
       
       if(is.null(text)){
@@ -386,6 +471,13 @@ selector <- R6::R6Class(
       
     },
     
+#' @param remDr A selenium webdriver address
+#' @param px Number of pixels to scroll down within the main window.
+#' 
+#' @return NULL
+#' @export
+#'
+#' @examples selector$scroll(remDr = remDr, px = 1000)
     scroll = function(remDr, px = 500){
       
       e <- remDr$findElement(using = "xpath", value = self$xpath())
@@ -393,6 +485,19 @@ selector <- R6::R6Class(
       
     },
     
+
+#' @param text A string to match
+#' @param exact Exact String match? TRUE/FALSE
+#' @param xpath_in A string (optional) containing the xpath you want to injuect text matching into. By defaul, pulls from the internal selectors.
+#' 
+#' @return An xpath string
+#' @export
+#'
+#' @examples selector$xpath_text(
+#'   text = "match_my_text", 
+#'   exact = FALSE,
+#'   xpath_in = "my_custom_xpath"
+#'  )
     xpath_text = function(text, exact = FALSE, xpath_in = NULL){
       
       if(!is.null(xpath_in)){
@@ -446,6 +551,9 @@ unique_classes <- function(html_in, tag_in = NULL){
     return()
 }
 
+# Attribute helper function for population the selector construction form in 
+# mod_classification_1
+
 attr_names <- function(html_in, tag_in, class_in = NULL){
   
   # print(tag_in)
@@ -472,6 +580,9 @@ attr_names <- function(html_in, tag_in, class_in = NULL){
   
 }
 
+# Attribute value helper function for population the selector construction form in
+# mod_classification_1
+
 attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
   
   if(tag_in == "(No Tag)"){
@@ -495,11 +606,13 @@ attr_values <- function(html_in, tag_in = NULL, attr_in, class_in = NULL){
     return()
 }
 
+# Smooth scroll function, internal
 smooth_scroll <- function(remDr, px){
   js <- paste0("window.scrollBy({top: ", px,", behavior: 'smooth'});")
   remDr$executeScript(js)
 }
 
+# Function for internal demo development, simplifying the data fetch process.
 get_page <- function(remDr){
   page <- remDr$getPageSource()
   page <- rvest::read_html(page[[1]])
