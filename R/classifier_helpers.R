@@ -113,7 +113,7 @@ selector <- R6::R6Class(
       # print("Attr After")
       # print(attr_out)
       
-      print(str(attr_out))
+      # print(str(attr_out))
       
       if(length(attr_out) == 0){
         # print("l0")
@@ -197,8 +197,8 @@ selector <- R6::R6Class(
       c_a_buffer <- list()
       c_a_buffer <- append(c_a_buffer, self$xpath_classes(self$css_self))
       
-      print("CSS ATTRS SELF")
-      print(self$xpath_attrs(self$css_self))
+      # print("CSS ATTRS SELF")
+      # print(self$xpath_attrs(self$css_self))
       
       c_a_buffer <- append(c_a_buffer, self$xpath_attrs(self$css_self))
       
@@ -243,11 +243,11 @@ selector <- R6::R6Class(
       xpath_out <- stringr::str_replace(xpath_out, pattern = "\\[ and ", replacement = "\\[")
       xpath_out <- stringr::str_remove_all(xpath_out, pattern = "\\[\\]")
       
-      print("MAIN IS")
-      print(self$css_self)
+      # print("MAIN IS")
+      # print(self$css_self)
       
-      print("XPATH IS")
-      print(xpath_out)
+      # print("XPATH IS")
+      # print(xpath_out)
       
       return(xpath_out)
     },
@@ -303,7 +303,7 @@ selector <- R6::R6Class(
     js = function(border = TRUE){
       
       # Methods for flagging whether various css selectors match to adjacent/nested elements
-      print(str(self$css_self))
+      # print(str(self$css_self))
       
       if(!is.null(self$css_self)){
         if(trimws(self$css_self) != ""){

@@ -74,28 +74,30 @@ mod_demo1_server <- function(id, r){
           smooth_scroll(r$remDr, 500 + max(0,rnorm(1,0,20)))
           Sys.sleep(0.4 + max(0,rnorm(1,0,0.05)))
         }
+        
+        Sys.sleep(0.5)
       
         page <- r$remDr$getPageSource()
         page <- rvest::read_html(page[[1]])
         
         post_list <- page %>% post$scrape()
-      
-        title_vec <- post_list %>% post_title$text()
-        url_vec <- post_list %>% post_title$href()
-        time_vec <- post_list %>% post_time$scrape() %>% rvest::html_attr("datetime")
-      
-        print(str(title_vec))
-        print(str(url_vec))
-        print(str(time_vec))
         
-        if(is.null(output_df)){
-          output_df <- data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
-        }else{
-          output_df <- dplyr::bind_rows(
-            output_df,
-            data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
-          ) %>% 
-            dplyr::distinct()
+        for(p in post_list){
+        
+          title_vec <- p %>% post_title$text()
+          url_vec <- p %>% post_title$href()
+          time_vec <- p %>% post_time$scrape() %>% rvest::html_attr("datetime")
+          
+          if(is.null(output_df)){
+            output_df <- data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
+          }else{
+            output_df <- dplyr::bind_rows(
+              output_df,
+              data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
+            ) %>% 
+              dplyr::distinct()
+          }
+          
         }
         
       }
