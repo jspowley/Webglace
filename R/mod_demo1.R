@@ -48,14 +48,9 @@ mod_demo1_server <- function(id, r){
     
     s <- reactiveValues()
     
-    utils::data(paste0(golem::get_golem_wd(),"data/post"))
-    utils::data(paste0(golem::get_golem_wd(),"data/post_title"))
-    utils::data(paste0(golem::get_golem_wd(),"data/post_time"))
-    
-    print("GOLEM WD")
-    print(golem::get_golem_wd())
-    print("FILES")
-    print(list.files(golem::get_golem_wd(), all.files = TRUE))
+    try({utils::data(post, package = "Webglace")})
+    try({utils::data(post_title, package = "Webglace")})
+    try({utils::data(post_time, package = "Webglace")})
  
     output$display <- renderUI(viewport_standalone())
     
