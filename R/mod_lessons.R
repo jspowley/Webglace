@@ -23,11 +23,11 @@ mod_lessons_server <- function(id){
     
     ns <- session$ns
     
-    try({
-      quarto::quarto_render(
-        input = "inst/app/www/quarto/learnings.qmd"
-      )
-    })
+    #try({
+    #  quarto::quarto_render(
+    #    input = "inst/app/www/quarto/learnings.qmd"
+    #  )
+    #})
     
     output$learnings <- renderUI({
       tags$iframe(
