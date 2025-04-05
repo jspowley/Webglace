@@ -67,13 +67,17 @@ mod_demo1_server <- function(id, r){
     
     observeEvent(input$run_script, {
       
-      try(post_in <- post)
-      try(post_in_title <- post_title)
-      try(post_in_time <- post_time)
+      #try(post_in <- post)
+      #try(post_in_title <- post_title)
+      #try(post_in_time <- post_time)
       
-      try(post_in <- load(app_sys("data/post.rda")))
-      try(post_in_title <- load(app_sys("data/post_title.rda")))
-      try(post_in_time <- load(app_sys("data/post_time.rda")))
+      #try(post_in <- load(app_sys("data/post.rda")))
+      #try(post_in_title <- load(app_sys("data/post_title.rda")))
+      #try(post_in_time <- load(app_sys("data/post_time.rda")))
+      
+      post_in <- selector$new(css_self = "shreddit-post")
+      post_in_title <- selector$new(css_self = "a[id]")
+      post_in_time <- selector$new(css_self = "time", css_within = "faceplate-timeago")
       
       if(input$enable_custom){
         try(r$remDr$navigate(input$custom_url))
