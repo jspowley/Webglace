@@ -1,3 +1,6 @@
+
+# --- MODULE REMOVED, FAILED DUE TO DIV CLASS SHUFFLING + HIGH DIV SATURATION
+
 #' guitar UI Function
 #'
 #' @description A shiny Module.

@@ -11,7 +11,7 @@ app_ui <- function(request) {
     # Your application UI logic
     bslib::page_navbar(
       
-      title = shiny::img(src = "www/logo.png", height = "80px"),
+      title = shiny::img(src = "www/logo.png", height = "80px", alt = "Weglace"),
       
       mod_welcome_ui("welcome_1"),
       mod_browser_ui("browser_1"),

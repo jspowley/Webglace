@@ -1,3 +1,7 @@
+
+
+# --- MODULE REMOVED, DOCUMENTING FAILURES, ANGULAR JS ---
+
 #' calgary_rentals UI Function
 #'
 #' @description A shiny Module.
@@ -17,7 +21,7 @@ mod_calgary_rentals_ui <- function(id) {
     bslib::page_sidebar(
       
       sidebar = bslib::sidebar(
-        p("Simple script for pulling rents for 2 bedroom apartments in Calgary."),
+        p("(NOT SO) Simple script for pulling rents for 2 bedroom apartments in Calgary."),
         actionButton(ns("view_browser"), "View Browser"),
         actionButton(ns("run_script"), "Run Script")
       ),

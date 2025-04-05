@@ -1,7 +1,9 @@
 testServer(
   mod_lessons_server,
   # Add here your module params
-  args = list()
+  args = list(
+
+  )
   , {
     ns <- session$ns
     expect_true(
@@ -28,7 +30,7 @@ testServer(
  
 test_that("module ui works", {
   ui <- mod_lessons_ui(id = "test")
-  golem::expect_shinytaglist(ui)
+  golem::expect_shinytag(ui)
   # Check that formals have not been removed
   fmls <- formals(mod_lessons_ui)
   for (i in c("id")){

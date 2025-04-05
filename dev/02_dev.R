@@ -25,16 +25,36 @@ golem::add_module(name = "welcome", with_test = TRUE)
 golem::add_module(name = "browser", with_test = TRUE)
 golem::add_module(name = "classification_1", with_test = TRUE)
 golem::add_module(name = "testing_suite", with_test = TRUE)
-# golem::add_module(name = "calgary_rentals", with_test = TRUE)
-# golem::add_module(name = "guitar", with_test = TRUE)
+# golem::add_module(name = "calgary_rentals", with_test = TRUE) # REMOVED
+# golem::add_module(name = "guitar", with_test = TRUE) # REMOVED
 golem::add_module(name = "demo1", with_test = TRUE)
 golem::add_module(name = "lessons", with_test = TRUE)
 
 # Name of the module
 # golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
 
+usethis::use_pipe()
+
 usethis::use_package("bslib")
 usethis::use_package("RSelenium")
+usethis::use_package("base64enc")
+usethis::use_package("bslib")
+usethis::use_package("config")
+usethis::use_package("DT")
+usethis::use_package("fs")
+usethis::use_package("golem")
+usethis::use_package("htmltools")
+usethis::use_package("magrittr")
+usethis::use_package("OpenImageR")
+usethis::use_package("purrr")
+usethis::use_package("quarto")
+usethis::use_package("R6")
+usethis::use_package("RSelenium")
+usethis::use_package("rvest")
+usethis::use_package("shiny")
+usethis::use_package("shinypanel")
+usethis::use_package("stringr")
+usethis::use_package("xml2")
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
@@ -51,7 +71,7 @@ usethis::use_package("RSelenium")
 
 ## Add internal datasets ----
 ## If you have data in your package
-usethis::use_data_raw(name = "Raw_Data", open = FALSE)
+# usethis::use_data_raw(name = "Raw_Data", open = FALSE)
 
 ## Tests ----
 ## Add one line by test you want to create

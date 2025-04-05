@@ -1,6 +1,6 @@
 ## code to prepare `DATASET` dataset goes here
 
-## Attempts at rentfaster scraping
+## Attempts at rentfaster scraping (DEPCRECATED, due to Angluar)
 
 post <- readRDS("data-raw/demo1/post.rds")
 #saveRDS(post, "inst/app/data/post.rds")

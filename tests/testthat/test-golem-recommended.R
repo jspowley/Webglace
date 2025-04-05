@@ -4,6 +4,7 @@ test_that("app ui", {
   # Check that formals have not been removed
   fmls <- formals(app_ui)
   for (i in c("request")) {
+    print(i)
     expect_true(i %in% names(fmls))
   }
 })
