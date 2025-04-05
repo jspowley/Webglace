@@ -54,9 +54,10 @@ mod_demo1_server <- function(id, r){
       output$display <- renderUI(viewport_standalone())  
     })
     
-    post <- scraper_demo::post
-    post_title <- scraper_demo::post_title
-    post_time <- scraper_demo::post_time
+    post <- scrapedemo::post
+    post_title <- scrapedemo::post_title
+    post_time <- scrapedemo::post_time
+    
     print("POST EXISTS")
     print(str(post))
     

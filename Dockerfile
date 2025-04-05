@@ -13,6 +13,7 @@ RUN R -e "install.packages(c('devtools'), dependencies = TRUE, repos = 'https://
 # RUN R -e "setwd('/opt/Webglace'); devtools::install(dependencies = TRUE)"
 
 #RECENT
+RUN R -e "devtools::install_github('jspowley/scrapedemo', dependencies = TRUE)"
 RUN R -e "devtools::install_github('jspowley/Webglace', dependencies = TRUE)"
 
 
