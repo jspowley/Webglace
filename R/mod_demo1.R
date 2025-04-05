@@ -47,6 +47,10 @@ mod_demo1_server <- function(id, r){
     ns <- session$ns
     
     s <- reactiveValues()
+    
+    utils::data(post)
+    utils::data(post_time)
+    utils::data(post_title)
  
     output$display <- renderUI(viewport_standalone())
     
