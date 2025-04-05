@@ -10,8 +10,8 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages(c('devtools'), dependencies = TRUE, repos = 'https://packagemanager.rstudio.com/cran/latest')"
 
 RUN git clone https://github.com/jspowley/webglace.git /opt/Webglace
-WORKDIR /opt/Webglace
-RUN R -e "devtools::install(dependencies = TRUE, upgrade = 'always')"
+RUN R -e "setwd('/opt/Webglace'); devtools::install(dependencies = TRUE, upgrade = 'always')"
+
 #RECENT
 # RUN R -e "devtools::install_github('jspowley/Webglace', dependencies = TRUE)"
 
