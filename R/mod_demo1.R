@@ -56,16 +56,18 @@ mod_demo1_server <- function(id, r){
     
     # Slight break in molecularity, there's something strange about data patching on packages inside of Docker deployments
     # Found this by sshing into the container, for a later conversation with you, Phil
-    try({post <- load("/opt/my_dependencies/scrapedemo/data/post.rda")})
-    print("POST")
-    try({print(str(post))})
-    try({post_title <- load("/opt/my_dependencies/scrapedemo/data/post_title.rda")})
-    try({post_time <- load("/opt/my_dependencies/scrapedemo/data/post_time.rda")})
+
+    print("FILE VISIBLE!")
+    print(file.exists("/opt/my_dependencies/scrapedemo/data/post_time.rda"))
     
     print("POST EXISTS")
-    print(str(post))
+    # print(str(post))
     
     observeEvent(input$run_script, {
+      
+      post_in <- load("/opt/my_dependencies/scrapedemo/data/post.rda")
+      post_in_title <- load("/opt/my_dependencies/scrapedemo/data/post_title.rda")
+      post_in_ <- load("/opt/my_dependencies/scrapedemo/data/post_time.rda")
       
       if(input$enable_custom){
         try(r$remDr$navigate(input$custom_url))
@@ -91,20 +93,20 @@ mod_demo1_server <- function(id, r){
         page <- r$remDr$getPageSource()
         page <- rvest::read_html(page[[1]])
         
-        post_list <- page %>% post$scrape()
+        post_list <- page %>% post_in$scrape()
         
         for(p in post_list){
         
-          title_vec <- p %>% post_title$text()
-          url_vec <- p %>% post_title$href()
-          time_vec <- p %>% post_time$scrape() %>% rvest::html_attr("datetime")
+          title_vec <- p %>% post_in_title$text()
+          url_vec <- p %>% post_in_title$href()
+          time_vec <- p %>% post_in_time$scrape() %>% rvest::html_attr("datetime")
           
           if(is.null(output_df)){
-            output_df <- data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
+            output_df <- data.frame(title = title_vec, url = url_vec, post_in_time = time_vec, scrape_time = Sys.time())
           }else{
             output_df <- dplyr::bind_rows(
               output_df,
-              data.frame(title = title_vec, url = url_vec, post_time = time_vec, scrape_time = Sys.time())
+              data.frame(title = title_vec, url = url_vec, post_in_time = time_vec, scrape_time = Sys.time())
             ) %>% 
               dplyr::distinct()
           }
