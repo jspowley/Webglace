@@ -352,6 +352,8 @@ selector$text(html)
 # For clicking dynamic elements. For more advanced interaction, xpath is designed to be able to target elements easily within a JS framework, and is recommended.
 # Text matching is optional, but helpful for targetting buttons very in singular fashion.
 selector$click(remDr, text = NULL, exact_text = FALSE)
+
+# Additional and more up to date documentation by running library(Webglace) and ?selector.
 "
 )
           

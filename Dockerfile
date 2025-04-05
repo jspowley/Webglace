@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
 RUN R -e "install.packages(c('devtools'), dependencies = TRUE, repos = 'https://packagemanager.rstudio.com/cran/latest')"
 
 RUN git clone https://github.com/jspowley/scrapedemo.git /opt/my_dependencies/scrapedemo
-RUN chown -R shiny:shiny /opt/my_dependencies
+# RUN chown -R shiny:shiny /opt/my_dependencies
 # RUN git clone https://github.com/jspowley/webglace.git /opt/Webglace
 # RUN R -e "setwd('/opt/Webglace'); devtools::install(dependencies = TRUE)"
 
