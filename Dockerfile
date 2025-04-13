@@ -9,13 +9,13 @@ RUN apt-get update && apt-get install -y \
 # RUN R -e "install.packages(c('devtools', 'shiny', 'bslib', 'tidyverse', 'DT', 'rlang', 'rhandsontable', 'plotly', 'shinyalert', 'lubridate', 'tidyquant', 'facmodCS', 'moments', 'Rcpp', 'shinydashboard', 'profvis', 'shinyalert'), dependencies = TRUE, repos = 'https://packagemanager.rstudio.com/cran/latest')"
 RUN R -e "install.packages(c('devtools'), dependencies = TRUE, repos = 'https://packagemanager.rstudio.com/cran/latest')"
 
-RUN git clone https://github.com/jspowley/scrapedemo.git /opt/my_dependencies/scrapedemo
+# RUN git clone https://github.com/jspowley/scrapedemo.git /opt/my_dependencies/scrapedemo
 # RUN chown -R shiny:shiny /opt/my_dependencies
 # RUN git clone https://github.com/jspowley/webglace.git /opt/Webglace
 # RUN R -e "setwd('/opt/Webglace'); devtools::install(dependencies = TRUE)"
 
 #RECENT
-RUN R -e "devtools::install_github('jspowley/scrapedemo', dependencies = TRUE)"
+# RUN R -e "devtools::install_github('jspowley/scrapedemo', dependencies = TRUE)"
 RUN R -e "devtools::install_github('jspowley/Webglace', dependencies = TRUE)"
 
 
