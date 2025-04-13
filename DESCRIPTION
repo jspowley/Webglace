@@ -20,7 +20,6 @@ Imports:
     R6,
     RSelenium,
     rvest,
-    scrapedemo,
     shiny,
     shinypanel,
     stringr,
